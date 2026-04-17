@@ -1,0 +1,352 @@
+/* ===== Custom Dropdown ===== */
+.custom-dropdown {
+  position: relative;
+  width: 100%;
+}
+
+.dropdown-selected {
+  background: var(--bg-subtle);
+  border: 1px solid var(--border);
+  color: var(--text);
+  padding: 9px 12px;
+  border-radius: 10px;
+  font-size: 13px;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.15s;
+}
+
+.dropdown-selected:hover { 
+  border-color: var(--accent); 
+}
+
+.dropdown-selected.active { 
+  border-color: var(--accent); 
+  box-shadow: 0 0 0 3px rgba(0,0,0,0.05);
+  background: var(--bg-card);
+}
+
+.dropdown-arrow {
+  width: 0;
+  height: 0;
+  border-left: 4px solid transparent;
+  border-right: 4px solid transparent;
+  border-top: 5px solid var(--text-muted);
+  margin-left: 4px;
+  transition: transform 0.2s;
+}
+
+.dropdown-selected.active .dropdown-arrow { 
+  transform: rotate(180deg); 
+  border-top-color: var(--accent);
+}
+
+.dropdown-options {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.1);
+  z-index: 100;
+  display: none;
+  overflow: hidden;
+  padding: 4px;
+}
+
+.dropdown-options.show { 
+  display: block; 
+}
+
+.dropdown-option {
+  padding: 8px 12px;
+  font-size: 13px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.1s;
+}
+
+.dropdown-option:hover { 
+  background: var(--bg-subtle); 
+}
+
+.dropdown-option.selected { 
+  font-weight: 600; 
+  background: var(--bg); 
+}
+
+/* ===== Table ===== */
+table { 
+  width: 100%; 
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+thead th {
+  text-align: left; 
+  padding: 10px 16px; 
+  font-size: 10px; 
+  font-weight: 600;
+  color: var(--text-muted); 
+  text-transform: uppercase; 
+  letter-spacing: 0.5px;
+  border-bottom: 1px solid var(--border); 
+  background: var(--bg-subtle);
+}
+
+thead th:first-child { border-radius: 8px 0 0 0; }
+thead th:last-child { border-radius: 0 8px 0 0; }
+
+tbody td {
+  padding: 12px 16px; 
+  font-size: 13px; 
+  border-bottom: 1px solid var(--border);
+  vertical-align: middle;
+}
+
+tbody tr:last-child td { 
+  border-bottom: none; 
+}
+
+tbody tr {
+  transition: background 0.1s;
+}
+
+tbody tr:hover { 
+  background: var(--bg-subtle); 
+}
+
+tbody td a {
+  color: var(--accent);
+  text-decoration: none;
+  font-size: 12px;
+  font-weight: 600;
+  transition: opacity 0.15s;
+}
+
+tbody td a:hover {
+  opacity: 0.7;
+}
+
+/* ===== Modal ===== */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal-overlay.show {
+  display: flex;
+}
+
+.modal-content {
+  background: var(--bg-card);
+  border-radius: var(--radius-lg);
+  padding: 32px;
+  width: 90%;
+  max-width: 600px;
+  max-height: 85vh;
+  overflow-y: auto;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.modal-content::-webkit-scrollbar { display: none; }
+
+.empty-state {
+  text-align: center;
+  padding: 60px 20px;
+  color: var(--text-muted);
+  font-size: 13px;
+}
+
+/* ===== Toast Notification ===== */
+#toast-container {
+  position: fixed;
+  top: 16px;
+  right: 16px;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  pointer-events: none;
+}
+
+.toast-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 16px;
+  border-radius: 12px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.12), 0 2px 8px rgba(0,0,0,0.06);
+  backdrop-filter: blur(12px);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text);
+  min-width: 240px;
+  max-width: 380px;
+  pointer-events: auto;
+  position: relative;
+  overflow: hidden;
+  transform: translateX(120%);
+  opacity: 0;
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.4s ease;
+}
+
+.toast-item.show {
+  transform: translateX(0);
+  opacity: 1;
+}
+
+.toast-item.hide {
+  transform: translateX(120%);
+  opacity: 0;
+}
+
+.toast-icon {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+  fill: none;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.toast-success .toast-icon {
+  stroke: var(--success);
+}
+
+.toast-error .toast-icon {
+  stroke: var(--danger);
+}
+
+.toast-msg {
+  flex: 1;
+  line-height: 1.4;
+}
+
+.toast-progress {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: transparent;
+}
+
+.toast-progress-bar {
+  height: 100%;
+  border-radius: 0 0 12px 12px;
+  animation: toast-countdown 3s linear forwards;
+}
+
+.toast-success .toast-progress-bar {
+  background: var(--success);
+}
+
+.toast-error .toast-progress-bar {
+  background: var(--danger);
+}
+
+@keyframes toast-countdown {
+  from { width: 100%; }
+  to { width: 0%; }
+}
+
+/* ===== Dark Theme Component Overrides ===== */
+[data-theme="dark"] .btn-primary {
+  background: #e5e5e5;
+  color: #111;
+}
+
+[data-theme="dark"] .btn-primary:hover:not(:disabled) {
+  background: #fff;
+}
+
+[data-theme="dark"] .btn-danger {
+  color: #fff;
+}
+
+[data-theme="dark"] .form-input:focus,
+[data-theme="dark"] .form-select:focus {
+  box-shadow: 0 0 0 3px rgba(255,255,255,0.06);
+}
+
+[data-theme="dark"] .dropdown-selected.active {
+  box-shadow: 0 0 0 3px rgba(255,255,255,0.06);
+}
+
+[data-theme="dark"] .modal-content {
+  background: var(--bg-card);
+}
+
+[data-theme="dark"] .log-box {
+  background: #0a0a0f;
+  border-color: rgba(255,255,255,0.04);
+  color: rgba(180,230,180,0.7);
+}
+
+/* ===== Proxy Badges ===== */
+.proxy-badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 6px;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+  background: var(--bg-subtle);
+  color: var(--text-muted);
+}
+.proxy-badge-active { background: rgba(16,185,129,0.12); color: #10b981; }
+.proxy-badge-cooldown { background: rgba(245,158,11,0.12); color: #f59e0b; }
+.proxy-badge-black { background: rgba(239,68,68,0.12); color: #ef4444; }
+.proxy-badge-res { background: rgba(59,130,246,0.12); color: #3b82f6; }
+.proxy-badge-dc { background: rgba(139,92,246,0.12); color: #8b5cf6; }
+.proxy-num-green { color: #10b981; font-weight: 600; font-size: 12px; }
+.proxy-num-red { color: #ef4444; font-weight: 600; font-size: 12px; }
+
+/* ===== Proxy Address Tooltip ===== */
+.proxy-addr-cell {
+  position: relative;
+}
+.proxy-addr-cell:hover .addr-tooltip {
+  display: block;
+}
+.addr-tooltip {
+  display: none;
+  position: absolute;
+  bottom: 100%;
+  left: 0;
+  margin-bottom: 6px;
+  background: #1f2937;
+  color: #fff;
+  padding: 6px 10px;
+  border-radius: 8px;
+  font-size: 10px;
+  font-weight: 500;
+  white-space: pre-wrap;
+  word-break: break-all;
+  max-width: 380px;
+  line-height: 1.4;
+  pointer-events: none;
+  z-index: 300;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+[data-theme="dark"] .addr-tooltip {
+  background: #374151;
+}

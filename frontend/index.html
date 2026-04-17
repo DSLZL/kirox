@@ -1,0 +1,1210 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='6' fill='%23000'/><path d='M10 8v16M10 16l8-8M10 16l8 8' stroke='%23fff' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round' fill='none'/></svg>">
+<title>Kiro 注册机</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Noto+Sans+SC:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/layout.css">
+<link rel="stylesheet" href="css/dashboard.css">
+<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/components.css">
+<style>
+  /* 骨架屏样式 */
+  #skeleton-loader {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: linear-gradient(135deg, #eef2f7 0%, #e0e7ff 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+  }
+  .skeleton-content {
+    text-align: center;
+  }
+  .skeleton-logo {
+    width: 80px;
+    height: 80px;
+    margin: 0 auto 24px;
+    background: rgba(255,255,255,0.9);
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1);
+  }
+  .skeleton-logo svg {
+    width: 48px;
+    height: 48px;
+  }
+  .skeleton-text {
+    font-size: 18px;
+    font-weight: 600;
+    color: #1f2937;
+    margin-bottom: 16px;
+  }
+  .skeleton-spinner {
+    width: 32px;
+    height: 32px;
+    margin: 0 auto;
+    border: 3px solid rgba(59,130,246,0.2);
+    border-top-color: #3b82f6;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+  }
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
+</style>
+</head>
+<body>
+
+<!-- 全局加载遮罩层 -->
+<div id="global-loading-overlay" style="display:none;position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.6);backdrop-filter:blur(4px);z-index:9999;align-items:center;justify-content:center;flex-direction:column;">
+  <div class="skeleton-spinner" style="border-top-color:#3b82f6;"></div>
+  <div id="global-loading-text" style="margin-top:16px;font-size:14px;font-weight:600;color:#fff;text-shadow:0 1px 2px rgba(0,0,0,0.3);">正在激活卡密...</div>
+</div>
+
+<!-- 骨架屏加载 -->
+<div id="skeleton-loader">
+  <div class="skeleton-content">
+    <div class="skeleton-logo">
+      <svg viewBox="0 0 32 32" fill="none">
+        <path d="M10 8v16M10 16l8-8M10 16l8 8" stroke="#000" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </div>
+    <div class="skeleton-text">Kiro 注册机</div>
+    <div class="skeleton-spinner"></div>
+  </div>
+</div>
+
+<!-- 卡密激活模态框 -->
+<div id="license-modal" class="modal-overlay">
+  <div class="modal-content" style="max-width:450px;">
+    <div class="modal-header">
+      <span>激活卡密</span>
+      <button onclick="closeLicenseModal()" class="modal-close">&times;</button>
+    </div>
+    <div class="modal-body">
+      <form id="license-form" onsubmit="return activateLicense(event)">
+        <div class="form-group">
+          <label>卡密</label>
+          <input type="text" id="license-key-input" class="form-input" placeholder="xxxx-xxxx-xxxx-xxxx" required>
+        </div>
+        <div id="license-error" style="margin-top:12px;padding:12px;background:var(--bg-subtle);border:1px solid var(--border);border-radius:8px;color:var(--danger);font-size:12px;display:none;"></div>
+        <div style="margin-top:20px;display:flex;gap:8px;">
+          <button type="button" onclick="closeLicenseModal()" class="btn btn-secondary" style="flex:1;">取消</button>
+          <button type="submit" id="btn-activate-license" class="btn btn-primary" style="flex:1;">激活</button>
+        </div>
+      </form>
+      <div style="margin-top:20px;padding-top:20px;border-top:1px solid var(--border);text-align:center;">
+        <div style="font-size:12px;color:var(--text-secondary);">
+          需要购买卡密？<a href="https://qm.qq.com/q/18hENvgSoy" target="_blank" style="color:var(--accent);text-decoration:none;">加入QQ群：1090339570</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 更新提示模态框 -->
+<div id="update-modal" class="modal-overlay">
+  <div style="width:100%;max-width:500px;padding:24px;">
+    <div class="card" style="padding:32px;">
+      <div style="text-align:center;margin-bottom:24px;--wails-draggable:drag;cursor:move;">
+        <div style="font-size:18px;font-weight:700;color:var(--accent);">发现新版本</div>
+      </div>
+      <div style="margin-bottom:24px;--wails-draggable:no-drag;">
+        <div style="display:flex;justify-content:space-between;margin-bottom:12px;font-size:13px;">
+          <span style="color:var(--text-secondary);">当前版本</span>
+          <span id="update-current-version" style="font-family:var(--font-mono);font-weight:600;">-</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;margin-bottom:12px;font-size:13px;">
+          <span style="color:var(--text-secondary);">最新版本</span>
+          <span id="update-latest-version" style="font-family:var(--font-mono);font-weight:600;color:var(--accent);">-</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;margin-bottom:12px;font-size:13px;">
+          <span style="color:var(--text-secondary);">发布日期</span>
+          <span id="update-release-date" style="font-family:var(--font-mono);font-weight:600;">-</span>
+        </div>
+      </div>
+      <div style="margin-bottom:24px;padding:16px;background:var(--bg-subtle);border:1px solid var(--border);border-radius:var(--radius);--wails-draggable:no-drag;">
+        <div style="font-size:11px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px;">更新内容</div>
+        <div id="update-changelog" style="font-size:12px;line-height:1.6;color:var(--text);white-space:pre-wrap;">-</div>
+      </div>
+      <div id="update-progress-container" style="display:none;margin-bottom:24px;--wails-draggable:no-drag;">
+        <div style="font-size:11px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px;">下载进度</div>
+        <div class="progress-bg"><div id="update-progress-bar" class="progress-bar"></div></div>
+        <div id="update-progress-text" style="font-size:11px;color:var(--text-secondary);margin-top:6px;text-align:center;">0%</div>
+      </div>
+      <div class="btn-row" style="--wails-draggable:no-drag;">
+        <button onclick="closeUpdateModal()" id="btn-update-later" class="btn btn-secondary" style="flex:1;justify-content:center;">稍后更新</button>
+        <button onclick="downloadUpdate()" id="btn-update-now" class="btn btn-primary" style="flex:1;justify-content:center;">立即更新</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 确认弹窗 -->
+<div id="confirm-modal" class="modal-overlay" style="z-index:1100;">
+  <div style="width:100%;max-width:400px;padding:24px;">
+    <div class="card" style="padding:32px;">
+      <div style="text-align:center;margin-bottom:20px;">
+        <div style="width:48px;height:48px;border-radius:14px;background:#fef2f2;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;">
+          <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="#ef4444" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        </div>
+        <div id="confirm-title" style="font-size:17px;font-weight:700;color:var(--text);margin-bottom:8px;">确认退出卡密？</div>
+        <div id="confirm-message" style="font-size:13px;color:var(--text-secondary);line-height:1.6;">此操作会清除本地授权信息，需要重新激活卡密才能使用。</div>
+      </div>
+      <div class="btn-row">
+        <button onclick="closeConfirmModal()" class="btn btn-secondary" style="flex:1;justify-content:center;">取消</button>
+        <button id="confirm-action-btn" onclick="confirmAction()" class="btn btn-primary" style="flex:1;justify-content:center;background:var(--danger);">确认退出</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 主界面 ===== -->
+<div id="main-container" style="display:none;height:100vh;width:100vw;position:fixed;top:0;left:0;z-index:1;">
+
+<!-- 左侧边栏 -->
+<div class="sidebar">
+  <div class="sidebar-nav">
+    <!-- 概览 -->
+    <div class="nav-item active" onclick="switchPage('overview')" data-page="overview">
+      <div class="nav-dot"></div>
+      <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+      <span class="nav-tooltip">概览</span>
+    </div>
+    <!-- 代理管理 -->
+    <div class="nav-item" onclick="switchPage('proxy')" data-page="proxy">
+      <div class="nav-dot"></div>
+      <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+      <span class="nav-tooltip">代理管理</span>
+    </div>
+    <!-- 注册结果 -->
+    <div class="nav-item" onclick="switchPage('results')" data-page="results">
+      <div class="nav-dot"></div>
+      <svg viewBox="0 0 24 24"><path d="M16 4h2a2 2 0 012 2v14a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h2"/><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/><path d="M9 14l2 2 4-4"/></svg>
+      <span class="nav-tooltip">注册结果</span>
+    </div>
+    <!-- 日志 -->
+    <div class="nav-item" onclick="switchPage('logs')" data-page="logs">
+      <div class="nav-dot"></div>
+      <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+      <span class="nav-tooltip">运行日志</span>
+    </div>
+
+    <!-- 卡密激活 -->
+    <div class="nav-item" onclick="switchPage('license')" data-page="license">
+      <div class="nav-dot"></div>
+      <svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+      <span class="nav-tooltip">卡密激活</span>
+    </div>
+    <!-- 链动小铺 -->
+    <div class="nav-item" onclick="switchPage('store')" data-page="store">
+      <div class="nav-dot"></div>
+      <svg viewBox="0 0 24 24"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
+      <span class="nav-tooltip">链动小铺</span>
+    </div>
+  </div>
+
+  <div class="sidebar-bottom">
+    <div class="nav-divider"></div>
+    <!-- 设置 -->
+    <div class="nav-item" onclick="switchPage('settings')" data-page="settings">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
+      <span class="nav-tooltip">设置</span>
+    </div>
+    <!-- 主题切换 -->
+    <div class="nav-item" onclick="toggleTheme(event)">
+      <svg id="theme-icon-light" viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+      <svg id="theme-icon-dark" viewBox="0 0 24 24" style="display:none;"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>
+      <span class="nav-tooltip">切换主题</span>
+    </div>
+    <!-- 检查更新 -->
+    <div class="nav-item" onclick="checkUpdateManually()">
+      <svg viewBox="0 0 24 24"><path d="M21 12a9 9 0 11-6.22-8.56"/><path d="M21 3v6h-6"/></svg>
+      <span class="nav-tooltip">检查更新</span>
+    </div>
+    <!-- 退出卡密 -->
+    <div class="nav-item" onclick="logoutLicense()">
+      <svg viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9"/></svg>
+      <span class="nav-tooltip">退出卡密</span>
+    </div>
+  </div>
+</div>
+
+<!-- 窗口标题栏 -->
+<div class="app-titlebar">
+  <span class="app-titlebar-text" id="titlebar-text">概览</span>
+  <div class="window-traffic">
+    <div style="background:#28c840;" onclick="maximizeApp()"></div>
+    <div style="background:#febc2e;" onclick="minimizeApp()"></div>
+    <div style="background:#ff5f57;" onclick="closeApp()"></div>
+  </div>
+</div>
+
+<!-- 右侧主区域 -->
+<div class="app-layout">
+  <div class="app-content">
+
+    <!-- ===== Page: 概览（仪表盘） ===== -->
+    <div class="page active" id="page-overview">
+      <div class="db-wrap">
+        <!-- ===== 统计卡片 ===== -->
+        <div class="db-stats-row" style="grid-template-columns:1fr 1fr;">
+          <div class="db-stat-card">
+            <img src="assets/kiro.svg" style="width:52px;height:52px;border-radius:14px;flex-shrink:0;">
+            <div>
+              <div class="db-stat-label">Kiro 账号数</div>
+              <div class="db-stat-value" id="ov-kiro-success">0</div>
+            </div>
+          </div>
+          <div class="db-stat-card">
+            <svg viewBox="0 0 24 24" width="52" height="52" fill="none" style="flex-shrink:0;">
+              <circle cx="12" cy="12" r="10" stroke="#10b981" stroke-width="2" fill="#10b98120"/>
+              <path d="M8 12l2.5 2.5L16 9" stroke="#10b981" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            <div>
+              <div class="db-stat-label">注册成功率</div>
+              <div class="db-stat-value" id="ov-kiro-success-rate">0%</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ===== Kiro 任务卡片 ===== -->
+        <div class="db-detail-section">
+          <div class="db-detail-top">
+            <div class="db-detail-title">
+              <img src="assets/kiro.svg" style="width:22px;height:22px;border-radius:6px;">
+              <span>Kiro</span>
+            </div>
+            <div class="db-detail-actions">
+              <span id="ov-kiro-status" class="db-badge db-badge-idle">空闲</span>
+              <span class="status-dot" id="st-dot"></span>
+            </div>
+          </div>
+          <div class="db-detail-body" style="flex-direction:column;">
+            <!-- 操作按钮 -->
+            <div style="display:flex;gap:8px;margin-bottom:4px;">
+              <button id="btn-start" onclick="openKiroTaskModal()" class="btn btn-primary btn-sm" style="flex:1;justify-content:center;">
+                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-right:4px;"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                新建任务
+              </button>
+              <button id="btn-stop" onclick="stopTask()" class="btn btn-secondary btn-sm" style="flex:1;justify-content:center;" disabled>停止</button>
+            </div>
+            <!-- 实时状态 -->
+            <div class="db-sub-card" style="flex:none;">
+              <div class="db-sub-card-head">
+                <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+                实时状态
+              </div>
+              <div class="db-sub-row"><span>进度</span><span id="st-progress" style="font-weight:600;">0/0</span></div>
+              <div style="margin:6px 0;"><div class="db-progress-track"><div id="progress-bar" class="db-progress-fill"></div></div></div>
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:0 16px;">
+                <div class="db-sub-row"><span>成功</span><span class="db-num-green" id="st-success">0</span></div>
+                <div class="db-sub-row"><span>失败</span><span class="db-num-red" id="st-failed">0</span></div>
+                <div class="db-sub-row"><span>已耗时</span><span id="st-elapsed">0s</span></div>
+                <div class="db-sub-row"><span>预计剩余</span><span id="st-eta">-</span></div>
+                <div class="db-sub-row"><span>平均耗时</span><span id="st-avg">-</span></div>
+                <div class="db-sub-row"><span>成功率</span><span id="st-rate">-</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ===== Outlook 邮箱池 ===== -->
+        <div class="db-detail-section" style="margin-top:20px;">
+          <div class="db-detail-top">
+            <div class="db-detail-title">
+              <img src="assets/outlook.png" style="width:22px;height:22px;border-radius:4px;">
+              <span>微软邮箱池</span>
+            </div>
+            <div class="db-detail-actions">
+              <button class="db-btn-refresh" onclick="openOutlookModal()">
+                <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
+                管理
+              </button>
+              <button class="db-btn-refresh" onclick="loadOverview()">
+                <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 11-6.22-8.56"/><path d="M21 3v6h-6"/></svg>
+                刷新
+              </button>
+            </div>
+          </div>
+          <div class="db-outlook-grid">
+            <div class="db-outlook-item">
+              <div class="db-outlook-num" id="ov-outlook-count">0</div>
+              <div class="db-outlook-lbl">总账号</div>
+            </div>
+            <div class="db-outlook-item">
+              <div class="db-outlook-num" style="color:#3b82f6;" id="ov-outlook-pending2">0</div>
+              <div class="db-outlook-lbl">待使用</div>
+            </div>
+            <div class="db-outlook-item">
+              <div class="db-outlook-num" style="color:#10b981;" id="ov-outlook-success">0</div>
+              <div class="db-outlook-lbl">注册成功</div>
+            </div>
+            <div class="db-outlook-item">
+              <div class="db-outlook-num" style="color:#8b5cf6;" id="ov-outlook-registered">0</div>
+              <div class="db-outlook-lbl">已使用</div>
+            </div>
+          </div>
+          <div style="padding:0 24px 20px;">
+            <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--text-secondary);margin-bottom:6px;">
+              <span>邮箱使用率</span>
+              <span id="ov-outlook-rate" style="font-weight:700;color:#f59e0b;">0%</span>
+            </div>
+            <div class="db-progress-track"><div id="ov-outlook-bar" class="db-progress-fill" style="background:linear-gradient(90deg,#f59e0b,#fbbf24);"></div></div>
+          </div>
+        </div>
+
+        <!-- ===== MoeMail 邮箱池 ===== -->
+        <div class="db-detail-section" style="margin-top:20px;">
+          <div class="db-detail-top">
+            <div class="db-detail-title">
+              <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:#10b981;">
+                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                <polyline points="22,6 12,13 2,6"></polyline>
+              </svg>
+              <span>MoeMail 邮箱池</span>
+            </div>
+            <div class="db-detail-actions">
+              <button class="db-btn-refresh" onclick="openMoeMailModal()">
+                <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
+                管理
+              </button>
+            </div>
+          </div>
+          <div class="db-outlook-grid">
+            <div class="db-outlook-item">
+              <div class="db-outlook-num" id="ov-moemail-count">0</div>
+              <div class="db-outlook-lbl">配置数量</div>
+            </div>
+            <div class="db-outlook-item">
+              <div class="db-outlook-num" style="color:#10b981;" id="ov-moemail-active">0</div>
+              <div class="db-outlook-lbl">可用配置</div>
+            </div>
+            <div class="db-outlook-item">
+              <div class="db-outlook-num" style="color:#3b82f6;" id="ov-moemail-domains">0</div>
+              <div class="db-outlook-lbl">可用域名</div>
+            </div>
+          </div>
+          
+          <!-- 可用域名列表 -->
+          <div id="ov-moemail-domains-container" style="margin-top:16px;display:none;">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+              <div style="display:flex;align-items:center;gap:6px;">
+                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="var(--text-secondary)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
+                  <polyline points="3.27 6.96 12 12.01 20.73 6.96"/>
+                  <line x1="12" y1="22.08" x2="12" y2="12"/>
+                </svg>
+                <span style="font-size:12px;font-weight:700;color:var(--text-secondary);">可用域名</span>
+              </div>
+            </div>
+            <div id="ov-moemail-domains-list" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:8px;margin-bottom:12px;"></div>
+            <div id="ov-moemail-domains-pagination" style="display:flex;justify-content:center;align-items:center;gap:6px;padding-top:4px;"></div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+
+
+    <!-- ===== Page: 代理管理 ===== -->
+    <div class="page" id="page-proxy">
+      <div class="page-scroll" style="padding:28px 32px 40px;max-width:1100px;margin:0 auto;">
+
+        <!-- 统计卡片 -->
+        <div class="db-stats-row" style="grid-template-columns:repeat(6,1fr);margin-bottom:20px;">
+          <div class="db-stat-card" style="padding:16px;">
+            <div><div class="db-stat-label">总代理</div><div class="db-stat-value" id="proxy-stat-total" style="font-size:22px;">0</div></div>
+          </div>
+          <div class="db-stat-card" style="padding:16px;">
+            <div><div class="db-stat-label" style="color:#10b981;">可用</div><div class="db-stat-value" id="proxy-stat-active" style="font-size:22px;color:#10b981;">0</div></div>
+          </div>
+          <div class="db-stat-card" style="padding:16px;">
+            <div><div class="db-stat-label" style="color:#f59e0b;">冷却中</div><div class="db-stat-value" id="proxy-stat-cooldown" style="font-size:22px;color:#f59e0b;">0</div></div>
+          </div>
+          <div class="db-stat-card" style="padding:16px;">
+            <div><div class="db-stat-label" style="color:#ef4444;">已拉黑</div><div class="db-stat-value" id="proxy-stat-blacklisted" style="font-size:22px;color:#ef4444;">0</div></div>
+          </div>
+          <div class="db-stat-card" style="padding:16px;">
+            <div><div class="db-stat-label" style="color:#3b82f6;">住宅IP</div><div class="db-stat-value" id="proxy-stat-residential" style="font-size:22px;color:#3b82f6;">0</div></div>
+          </div>
+          <div class="db-stat-card" style="padding:16px;">
+            <div><div class="db-stat-label" style="color:#8b5cf6;">机房IP</div><div class="db-stat-value" id="proxy-stat-datacenter" style="font-size:22px;color:#8b5cf6;">0</div></div>
+          </div>
+        </div>
+
+        <!-- 工具栏 -->
+        <div class="card" style="margin-bottom:20px;padding:16px 20px;">
+          <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+            <button onclick="importProxyYAML()" class="btn btn-primary btn-sm" style="font-size:12px;">
+              <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-right:4px;"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg>
+              文件导入
+            </button>
+            <button onclick="openProxyUrlModal()" class="btn btn-primary btn-sm" style="font-size:12px;background:#6366f1;border-color:#6366f1;color:#fff;">
+              <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-right:4px;"><path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"></path></svg>
+              URL 导入
+            </button>
+            <div class="custom-dropdown" id="proxy-auto-update-dropdown" style="width:auto;position:relative;z-index:20;">
+              <div class="dropdown-selected" onclick="toggleDropdown('proxy-auto-update-dropdown')" style="height:28px;padding:0 10px;font-size:11px;min-width:0;">
+                自动更新: <span id="proxy-auto-update-text">从未</span>
+                <span class="dropdown-arrow"></span>
+              </div>
+              <div class="dropdown-options" style="min-width:100px;z-index:100;">
+                <div class="dropdown-option selected" onclick="setProxyAutoUpdate(0, '从未')">从不更新</div>
+                <div class="dropdown-option" onclick="setProxyAutoUpdate(10, '10分钟')">每 10 分钟</div>
+                <div class="dropdown-option" onclick="setProxyAutoUpdate(30, '30分钟')">每 30 分钟</div>
+                <div class="dropdown-option" onclick="setProxyAutoUpdate(60, '1小时')">每 1 小时</div>
+                <div class="dropdown-option" onclick="setProxyAutoUpdate(240, '4小时')">每 4 小时</div>
+              </div>
+            </div>
+            <button onclick="exportProxyYAML()" class="btn btn-secondary btn-sm" style="font-size:12px;">导出 YAML</button>
+            <div id="proxy-normal-actions" style="display:flex;gap:8px;">
+              <button onclick="batchTestProxies()" class="btn btn-secondary btn-sm" style="font-size:12px;">全局测试</button>
+              <button onclick="resetAllProxyStatus()" class="btn btn-secondary btn-sm" style="font-size:12px;">全部重置</button>
+              <button onclick="clearProxyPool()" class="btn btn-sm" style="font-size:12px;background:var(--danger);color:#fff;">清空库</button>
+            </div>
+            <div style="flex:1;"></div>
+            <input type="text" id="proxy-add-input" class="form-input" placeholder="socks5://user:pass@host:port" style="width:280px;height:30px;font-size:11px;">
+            <button onclick="addProxyManual()" class="btn btn-primary btn-sm" style="font-size:12px;">添加</button>
+          </div>
+        </div>
+
+        <div style="display:flex;flex-direction:column;gap:20px;">
+          <!-- 策略配置 -->
+          <div class="card" style="padding:20px;">
+            <div style="font-size:14px;font-weight:700;margin-bottom:16px;">策略配置</div>
+
+            <div style="display:grid;grid-template-columns:repeat(5, 1fr);gap:20px;">
+              
+              <!-- 模块 1 -->
+              <div>
+                <label style="display:block;font-size:11px;font-weight:600;color:var(--text-secondary);margin-bottom:6px;">选择模式</label>
+                <div class="custom-dropdown" id="cfg-proxy-selection">
+                  <div class="dropdown-selected" onclick="toggleDropdown('cfg-proxy-selection')" style="height:32px;font-size:12px;">
+                    <span id="cfg-proxy-selection-text" data-value="roundrobin">顺序轮询</span>
+                    <span class="dropdown-arrow"></span>
+                  </div>
+                  <div class="dropdown-options">
+                    <div class="dropdown-option selected" data-val="roundrobin" onclick="onProxyDropdownSelect('cfg-proxy-selection', 'roundrobin', '顺序轮询')">顺序轮询</div>
+                    <div class="dropdown-option" data-val="random" onclick="onProxyDropdownSelect('cfg-proxy-selection', 'random', '完全随机')">完全随机</div>
+                    <div class="dropdown-option" data-val="weighted" onclick="onProxyDropdownSelect('cfg-proxy-selection', 'weighted', '加权随机')">加权随机</div>
+                    <div class="dropdown-option" data-val="least_used" onclick="onProxyDropdownSelect('cfg-proxy-selection', 'least_used', '最低负载优先')">最低负载优先</div>
+                  </div>
+                </div>
+                <label style="display:block;font-size:11px;font-weight:600;color:var(--text-secondary);margin:10px 0 6px;">400 自动重试</label>
+                <div class="custom-dropdown" id="cfg-otp400-retry">
+                  <div class="dropdown-selected" onclick="toggleDropdown('cfg-otp400-retry')" style="height:32px;font-size:12px;">
+                    <span id="cfg-otp400-retry-text" data-value="fuse">立即熔断</span>
+                    <span class="dropdown-arrow"></span>
+                  </div>
+                  <div class="dropdown-options">
+                    <div class="dropdown-option selected" data-val="fuse" onclick="onProxyDropdownSelect('cfg-otp400-retry', 'fuse', '立即熔断')">立即熔断</div>
+                    <div class="dropdown-option" data-val="switch_ip" onclick="onProxyDropdownSelect('cfg-otp400-retry', 'switch_ip', '切换IP重试')">切换IP重试</div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- 模块 2 -->
+              <div>
+                <div style="font-size:12px;font-weight:700;color:var(--text-secondary);margin-bottom:8px;">OTP 400 策略</div>
+                <div style="display:grid;gap:8px;">
+                  <div class="custom-dropdown" id="cfg-proxy-otp-action">
+                    <div class="dropdown-selected" onclick="toggleDropdown('cfg-proxy-otp-action')" style="height:30px;font-size:11px;">
+                      <span id="cfg-proxy-otp-action-text" data-value="cooldown">冷却</span>
+                      <span class="dropdown-arrow"></span>
+                    </div>
+                    <div class="dropdown-options">
+                      <div class="dropdown-option selected" data-val="cooldown" onclick="onProxyDropdownSelect('cfg-proxy-otp-action', 'cooldown', '冷却')">冷却</div>
+                      <div class="dropdown-option" data-val="blacklist" onclick="onProxyDropdownSelect('cfg-proxy-otp-action', 'blacklist', '拉黑')">拉黑</div>
+                      <div class="dropdown-option" data-val="ignore" onclick="onProxyDropdownSelect('cfg-proxy-otp-action', 'ignore', '忽略')">忽略</div>
+                    </div>
+                  </div>
+                  <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;">
+                    <div><label style="font-size:10px;color:var(--text-muted);">冷却(分钟)</label><input type="number" id="cfg-proxy-otp-cooldown" value="30" min="1" class="form-input" style="height:28px;font-size:11px;" onchange="saveProxyPolicy()"></div>
+                    <div><label style="font-size:10px;color:var(--text-muted);">阈值(次)</label><input type="number" id="cfg-proxy-otp-retries" value="2" min="1" class="form-input" style="height:28px;font-size:11px;" onchange="saveProxyPolicy()"></div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- 模块 3 -->
+              <div>
+                <div style="font-size:12px;font-weight:700;color:var(--text-secondary);margin-bottom:8px;">封号策略</div>
+                <div style="display:grid;gap:8px;">
+                  <div class="custom-dropdown" id="cfg-proxy-ban-action">
+                    <div class="dropdown-selected" onclick="toggleDropdown('cfg-proxy-ban-action')" style="height:30px;font-size:11px;">
+                      <span id="cfg-proxy-ban-action-text" data-value="blacklist">拉黑</span>
+                      <span class="dropdown-arrow"></span>
+                    </div>
+                    <div class="dropdown-options">
+                      <div class="dropdown-option selected" data-val="blacklist" onclick="onProxyDropdownSelect('cfg-proxy-ban-action', 'blacklist', '拉黑')">拉黑</div>
+                      <div class="dropdown-option" data-val="cooldown" onclick="onProxyDropdownSelect('cfg-proxy-ban-action', 'cooldown', '冷却')">冷却</div>
+                      <div class="dropdown-option" data-val="ignore" onclick="onProxyDropdownSelect('cfg-proxy-ban-action', 'ignore', '忽略')">忽略</div>
+                    </div>
+                  </div>
+                  <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;">
+                    <div><label style="font-size:10px;color:var(--text-muted);">冷却(分钟)</label><input type="number" id="cfg-proxy-ban-cooldown" value="60" min="1" class="form-input" style="height:28px;font-size:11px;" onchange="saveProxyPolicy()"></div>
+                    <div><label style="font-size:10px;color:var(--text-muted);">阈值(次)</label><input type="number" id="cfg-proxy-ban-count" value="1" min="1" class="form-input" style="height:28px;font-size:11px;" onchange="saveProxyPolicy()"></div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- 模块 4 -->
+              <div>
+                <div style="font-size:12px;font-weight:700;color:var(--text-secondary);margin-bottom:8px;">连接失败策略</div>
+                <div style="display:grid;gap:8px;">
+                  <div class="custom-dropdown" id="cfg-proxy-conn-action">
+                    <div class="dropdown-selected" onclick="toggleDropdown('cfg-proxy-conn-action')" style="height:30px;font-size:11px;">
+                      <span id="cfg-proxy-conn-action-text" data-value="cooldown">冷却</span>
+                      <span class="dropdown-arrow"></span>
+                    </div>
+                    <div class="dropdown-options">
+                      <div class="dropdown-option selected" data-val="cooldown" onclick="onProxyDropdownSelect('cfg-proxy-conn-action', 'cooldown', '冷却')">冷却</div>
+                      <div class="dropdown-option" data-val="blacklist" onclick="onProxyDropdownSelect('cfg-proxy-conn-action', 'blacklist', '拉黑')">拉黑</div>
+                      <div class="dropdown-option" data-val="ignore" onclick="onProxyDropdownSelect('cfg-proxy-conn-action', 'ignore', '忽略')">忽略</div>
+                    </div>
+                  </div>
+                  <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;">
+                    <div><label style="font-size:10px;color:var(--text-muted);">冷却(分钟)</label><input type="number" id="cfg-proxy-conn-cooldown" value="5" min="1" class="form-input" style="height:28px;font-size:11px;" onchange="saveProxyPolicy()"></div>
+                    <div><label style="font-size:10px;color:var(--text-muted);">阈值(次)</label><input type="number" id="cfg-proxy-conn-retries" value="5" min="1" class="form-input" style="height:28px;font-size:11px;" onchange="saveProxyPolicy()"></div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- 模块 5 -->
+              <div>
+                <div style="font-size:12px;font-weight:700;color:var(--text-secondary);margin-bottom:8px;">高级过滤</div>
+                <div style="display:grid;gap:8px;">
+                  <div class="custom-dropdown" id="cfg-proxy-allow-types">
+                    <div class="dropdown-selected" onclick="toggleDropdown('cfg-proxy-allow-types')" style="height:30px;font-size:11px;">
+                      <span id="cfg-proxy-allow-types-text" data-value="all">全部类型</span>
+                      <span class="dropdown-arrow"></span>
+                    </div>
+                    <div class="dropdown-options">
+                      <div class="dropdown-option selected" data-val="all" onclick="onProxyDropdownSelect('cfg-proxy-allow-types', 'all', '全部类型')">全部类型</div>
+                      <div class="dropdown-option" data-val="residential" onclick="onProxyDropdownSelect('cfg-proxy-allow-types', 'residential', '仅限住宅IP')">仅限住宅IP</div>
+                      <div class="dropdown-option" data-val="datacenter" onclick="onProxyDropdownSelect('cfg-proxy-allow-types', 'datacenter', '仅限机房IP')">仅限机房IP</div>
+                    </div>
+                  </div>
+                  <div class="custom-dropdown" id="cfg-proxy-allow-countries">
+                    <div class="dropdown-selected" onclick="toggleDropdown('cfg-proxy-allow-countries')" style="height:30px;font-size:11px;">
+                      <span id="cfg-proxy-allow-countries-text" data-value="all">随机地区</span>
+                      <span class="dropdown-arrow"></span>
+                    </div>
+                    <div class="dropdown-options" id="cfg-proxy-country-options">
+                      <div class="dropdown-option selected" data-val="all" onclick="onProxyDropdownSelect('cfg-proxy-allow-countries', 'all', '随机地区')">随机地区</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+          <!-- 下方：代理列表 -->
+          <div class="card" style="padding:0;">
+            <div style="padding:16px 20px;display:flex;align-items:center;gap:8px;border-bottom:1px solid var(--border);">
+              <span style="font-size:14px;font-weight:700;">代理列表</span>
+              <div id="proxy-batch-actions" style="display:none;gap:8px;margin-left:16px;">
+                <button id="proxy-btn-batch-test" onclick="batchTestSelected()" class="btn btn-secondary btn-sm" style="font-size:12px;color:#10b981;border-color:rgba(16,185,129,0.3);background:rgba(16,185,129,0.05);white-space:nowrap;">测试已选</button>
+                <button id="proxy-btn-batch-reset" onclick="batchResetSelected()" class="btn btn-secondary btn-sm" style="font-size:12px;white-space:nowrap;">重置已选</button>
+                <button id="proxy-btn-batch-delete" onclick="batchDeleteSelected()" class="btn btn-sm" style="font-size:12px;background:rgba(239,68,68,0.1);color:#ef4444;border:1px solid rgba(239,68,68,0.2);white-space:nowrap;">删除已选</button>
+              </div>
+              <div style="flex:1;"></div>
+              <input type="text" id="proxy-search" class="form-input" placeholder="搜索 IP / 国家 / ISP..." style="width:220px;height:28px;font-size:11px;" oninput="loadProxyPool()">
+              <div class="custom-dropdown" id="proxy-country-filter" style="width:auto;">
+                <div class="dropdown-selected" onclick="toggleDropdown('proxy-country-filter')" style="height:28px;padding:0 10px;font-size:11px;min-width:0;">
+                  <span id="proxy-country-filter-text" data-value="all">所有地区</span>
+                  <span class="dropdown-arrow"></span>
+                </div>
+                <div class="dropdown-options" id="proxy-country-options" style="min-width:100px;right:0;left:auto;">
+                  <div class="dropdown-option selected" onclick="setProxyCountryFilter('all','所有地区')">所有地区</div>
+                </div>
+              </div>
+              <div class="custom-dropdown" id="proxy-type-filter" style="width:auto;">
+                <div class="dropdown-selected" onclick="toggleDropdown('proxy-type-filter')" style="height:28px;padding:0 10px;font-size:11px;min-width:0;">
+                  <span id="proxy-type-filter-text" data-value="all">所有类型</span>
+                  <span class="dropdown-arrow"></span>
+                </div>
+                <div class="dropdown-options" style="min-width:100px;right:0;left:auto;">
+                  <div class="dropdown-option selected" onclick="setProxyTypeFilter('all','所有类型')">所有类型</div>
+                  <div class="dropdown-option" onclick="setProxyTypeFilter('residential','住宅IP')">住宅IP</div>
+                  <div class="dropdown-option" onclick="setProxyTypeFilter('datacenter','机房IP')">机房IP</div>
+                </div>
+              </div>
+              <div class="custom-dropdown" id="proxy-status-filter" style="width:auto;">
+                <div class="dropdown-selected" onclick="toggleDropdown('proxy-status-filter')" style="height:28px;padding:0 10px;font-size:11px;min-width:0;">
+                  <span id="proxy-status-filter-text" data-value="all">全部</span>
+                  <span class="dropdown-arrow"></span>
+                </div>
+                <div class="dropdown-options" style="min-width:100px;right:0;left:auto;">
+                  <div class="dropdown-option selected" onclick="setProxyStatusFilter('all','全部')">全部</div>
+                  <div class="dropdown-option" onclick="setProxyStatusFilter('active','可用')">可用</div>
+                  <div class="dropdown-option" onclick="setProxyStatusFilter('cooldown','冷却')">冷却中</div>
+                  <div class="dropdown-option" onclick="setProxyStatusFilter('blacklisted','拉黑')">已拉黑</div>
+                </div>
+              </div>
+            </div>
+            <div style="overflow-x:auto;">
+              <table>
+                <thead><tr>
+                  <th style="width:32px;text-align:center;"><input type="checkbox" id="proxy-select-all" onchange="toggleAllPageProxies(this.checked)" style="cursor:pointer;width:14px;height:14px;accent-color:var(--primary);"></th>
+                  <th>地址</th>
+                  <th style="width:110px;">国家/地区</th>
+                  <th style="width:50px;">类型</th>
+                  <th style="width:50px;">状态</th>
+                  <th style="width:80px;">成功/失败</th>
+                  <th style="width:60px;">延迟</th>
+                  <th style="width:70px;">上次使用</th>
+                  <th style="width:90px;text-align:right;">操作</th>
+                </tr></thead>
+                <tbody id="proxy-table-body"></tbody>
+              </table>
+              <div id="proxy-no-data" class="empty-state">暂无代理，点击"导入 YAML"或手动添加</div>
+              <div id="proxy-pager" style="display:none;padding:12px 16px;justify-content:space-between;align-items:center;font-size:12px;color:var(--text-secondary);border-top:1px solid var(--border);">
+                <div style="display:flex;align-items:center;gap:12px;">
+                  <span id="proxy-pager-info"></span>
+                  <div style="display:flex;align-items:center;gap:6px;">
+                    <span>每页</span>
+                    <div class="custom-dropdown" id="proxy-page-size-dropdown" style="width:auto;position:relative;z-index:9;">
+                      <div class="dropdown-selected" onclick="toggleDropdown('proxy-page-size-dropdown')" style="height:28px;padding:0 10px;font-size:12px;min-width:65px;display:flex;justify-content:space-between;align-items:center;">
+                        <span id="proxy-page-size-text">50</span>
+                        <span class="dropdown-arrow" style="margin-left:8px;"></span>
+                      </div>
+                      <div class="dropdown-options" style="min-width:75px;z-index:100;bottom:100%;top:auto;margin-bottom:4px;">
+                        <div class="dropdown-option" onclick="setProxyPageSize(20)">20</div>
+                        <div class="dropdown-option selected" onclick="setProxyPageSize(50)">50</div>
+                        <div class="dropdown-option" onclick="setProxyPageSize(100)">100</div>
+                        <div class="dropdown-option" onclick="setProxyPageSize(200)">200</div>
+                        <div class="dropdown-option" onclick="setProxyPageSize(500)">500</div>
+                      </div>
+                    </div>
+                    <span>条</span>
+                  </div>
+                </div>
+                <div style="display:flex;gap:8px;">
+                  <button onclick="changeProxyPage(-1)" id="proxy-pager-prev" class="btn btn-secondary btn-sm">上一页</button>
+                  <button onclick="changeProxyPage(1)" id="proxy-pager-next" class="btn btn-secondary btn-sm">下一页</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ===== Page: 设置 ===== -->
+    <div class="page" id="page-settings">
+      <div class="page-scroll" style="padding:28px 32px 40px;max-width:800px;margin:0 auto;">
+
+        <!-- 常规 -->
+        <div class="card" style="margin-bottom:20px;">
+          <div class="settings-group">
+            <div class="settings-group-title">常规</div>
+            
+            <div class="settings-item">
+              <div class="settings-item-main">
+                <div class="settings-item-title">存储目录</div>
+                <div class="settings-item-desc">所有注册结果和账号数据的加密存储位置</div>
+              </div>
+              <div class="settings-item-action">
+                <div style="display:flex;gap:8px;width:100%;">
+                  <input type="text" id="cfg-data-dir" placeholder="默认加密存储" class="form-input" readonly style="flex:1;">
+                  <button onclick="selectDataDir()" class="btn btn-secondary btn-sm">选择</button>
+                  <button onclick="resetDataDir()" class="btn btn-secondary btn-sm">重置</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 网络设置已迁移至独立代理管理系统 -->
+        <div class="card" style="margin-bottom:20px;">
+          <div class="settings-group">
+            <div class="settings-group-title">安全</div>
+            
+
+
+            <div class="settings-item">
+              <div class="settings-item-main">
+                <div class="settings-item-title">账号健康检查</div>
+                <div class="settings-item-desc">使用官方验活端点定期检查账号状态，自动标记失效账号</div>
+              </div>
+              <div class="settings-item-action">
+                <label style="cursor:pointer;">
+                  <div class="toggle-switch">
+                    <input type="checkbox" id="cfg-health-check-enabled">
+                    <span class="toggle-slider"></span>
+                  </div>
+                </label>
+              </div>
+            </div>
+
+            <div id="health-check-options" style="display:none;padding:16px 20px;background:var(--bg-subtle);border-radius:8px;margin-top:12px;">
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;">
+                <div>
+                  <label style="display:block;font-size:12px;font-weight:500;color:var(--text-secondary);margin-bottom:6px;">检查间隔(分钟)</label>
+                  <input type="number" id="cfg-health-check-interval" value="30" min="5" class="form-input">
+                </div>
+                <div>
+                  <label style="display:block;font-size:12px;font-weight:500;color:var(--text-secondary);margin-bottom:6px;">并发数</label>
+                  <input type="number" id="cfg-health-check-concurrency" value="5" min="1" max="20" class="form-input">
+                </div>
+              </div>
+              <button onclick="runHealthCheckNow()" class="btn btn-secondary btn-sm">立即检查</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- 通知 -->
+        <div class="card" style="margin-bottom:20px;">
+          <div class="settings-group">
+            <div class="settings-group-title">通知</div>
+            
+            <div class="settings-item">
+              <div class="settings-item-main">
+                <div class="settings-item-title">提示音</div>
+                <div class="settings-item-desc">任务结束时播放提示音</div>
+              </div>
+              <div class="settings-item-action">
+                <label style="cursor:pointer;">
+                  <div class="toggle-switch">
+                    <input type="checkbox" id="cfg-sound" checked>
+                    <span class="toggle-slider"></span>
+                  </div>
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ===== Page: 注册结果 ===== -->
+    <div class="page" id="page-results">
+      <div style="padding:28px 32px;flex:1;overflow-y:auto;">
+        <!-- 账号列表 -->
+        <div class="card" style="margin-bottom:20px;">
+          <div class="card-title" style="display:flex;align-items:center;gap:10px;">
+            <img src="assets/kiro.svg" style="width:20px;height:20px;border-radius:4px;">
+            账号列表
+            <div style="flex:1;"></div>
+            <input type="text" id="search-results" class="form-input" placeholder="搜索邮箱..." style="width:180px;height:30px;font-size:12px;" oninput="filterResults(this.value)">
+            <div class="custom-dropdown" id="kiro-status-filter" style="width:auto;">
+              <div class="dropdown-selected" onclick="toggleDropdown('kiro-status-filter')" style="height:28px;padding:0 10px;font-size:11px;min-width:0;">
+                <span id="kiro-status-filter-text">全部</span>
+                <span class="dropdown-arrow"></span>
+              </div>
+              <div class="dropdown-options" style="min-width:100px;right:0;left:auto;">
+                <div class="dropdown-option selected" onclick="setResultStatusFilter('all','全部')">全部</div>
+                <div class="dropdown-option" onclick="setResultStatusFilter('normal','正常')">正常</div>
+                <div class="dropdown-option" onclick="setResultStatusFilter('banned','已封号')">已封号</div>
+              </div>
+            </div>
+            <button id="btn-batch-delete" onclick="batchDeleteResults()" class="btn btn-sm" style="font-size:11px;background:var(--danger);color:#fff;display:none;">删除选中</button>
+            <button onclick="clearAllKiroResults()" class="btn btn-danger btn-sm" style="font-size:11px;">清空全部</button>
+            <button onclick="importKiroResults()" class="btn btn-secondary btn-sm" style="font-size:11px;">导入</button>
+            <div class="custom-dropdown" id="kiro-export-dropdown" style="width:auto;">
+              <div class="dropdown-selected" onclick="toggleDropdown('kiro-export-dropdown')" style="height:28px;padding:0 10px;font-size:11px;min-width:0;">
+                <span>导出</span>
+                <span class="dropdown-arrow"></span>
+              </div>
+              <div class="dropdown-options" style="min-width:120px;right:0;left:auto;">
+                <div class="dropdown-option" onclick="exportKiroResults('json')">JSON 格式</div>
+                <div class="dropdown-option" onclick="exportKiroResults('csv')">CSV 格式</div>
+                <div class="dropdown-option" onclick="exportKiroResults('txt')">TXT 格式</div>
+              </div>
+            </div>
+          </div>
+          <div style="overflow-x:auto;">
+            <table>
+              <thead><tr>
+                <th style="width:32px;"><input type="checkbox" id="results-select-all" onchange="toggleSelectAllResults(this.checked)" style="cursor:pointer;"></th>
+                <th style="width:40px;">#</th><th>邮箱地址</th><th>状态</th><th style="width:140px;">上次检查</th><th style="width:80px;text-align:right;">操作</th>
+              </tr></thead>
+              <tbody id="results-body"></tbody>
+            </table>
+            <div id="no-results" class="empty-state">暂无数据</div>
+            <div id="pager" style="display:none;padding:12px 16px;justify-content:space-between;align-items:center;font-size:12px;color:var(--text-secondary);border-top:1px solid var(--border);">
+              <div style="display:flex;align-items:center;gap:12px;">
+                <span id="pager-info"></span>
+                <div style="display:flex;align-items:center;gap:6px;">
+                  <span>每页</span>
+                  <div class="custom-dropdown" id="page-size-dropdown" style="width:auto;position:relative;z-index:10;">
+                    <div class="dropdown-selected" onclick="toggleDropdown('page-size-dropdown')" style="height:28px;padding:0 10px;font-size:12px;min-width:50px;">
+                      <span id="page-size-text">50</span>
+                      <span class="dropdown-arrow"></span>
+                    </div>
+                    <div class="dropdown-options" style="min-width:70px;z-index:100;bottom:100%;top:auto;margin-bottom:4px;">
+                      <div class="dropdown-option" onclick="setPageSize(20)">20</div>
+                      <div class="dropdown-option selected" onclick="setPageSize(50)">50</div>
+                      <div class="dropdown-option" onclick="setPageSize(100)">100</div>
+                      <div class="dropdown-option" onclick="setPageSize(200)">200</div>
+                    </div>
+                  </div>
+                  <span>条</span>
+                </div>
+              </div>
+              <div style="display:flex;gap:8px;">
+                <button onclick="changePage(-1)" id="pager-prev" class="btn btn-secondary btn-sm">上一页</button>
+                <button onclick="changePage(1)" id="pager-next" class="btn btn-secondary btn-sm">下一页</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== Page: 运行日志 ===== -->
+    <div class="page" id="page-logs" style="height:calc(100vh - 48px);overflow:hidden;">
+      <div style="padding:20px 24px;height:100%;box-sizing:border-box;display:flex;flex-direction:column;">
+        <div class="logs-panel" style="flex:1;min-height:0;display:flex;flex-direction:column;">
+          <div class="logs-panel-header" style="display:flex;align-items:center;justify-content:space-between;">
+            <span style="font-weight:700;">运行日志</span>
+            <button onclick="copyLogs()" class="btn btn-secondary btn-sm" style="font-size:11px;padding:3px 10px;">
+              <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right:4px;"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+              复制日志
+            </button>
+          </div>
+          <div id="unified-log-box" class="log-box" style="flex:1;min-height:0;overflow-y:auto;"></div>
+        </div>
+      </div>
+    </div>
+
+
+
+    <!-- ===== Page: 卡密激活 ===== -->
+    <div class="page" id="page-license">
+      <div style="padding:28px 32px;flex:1;overflow-y:auto;">
+        
+        <!-- 单一卡片，内部两列布局 -->
+        <div class="card" style="padding:32px;min-height:500px;">
+          <div style="display:grid;grid-template-columns:1.5fr 1fr;gap:32px;height:100%;">
+            
+            <!-- 左侧：订阅信息 -->
+            <div style="display:flex;flex-direction:column;">
+              <div style="font-size:14px;font-weight:700;margin-bottom:20px;">
+                订阅清单
+              </div>
+              
+              <div class="settings-group" style="flex:1;">
+                <!-- 条目 1 -->
+                <div class="settings-item" style="padding:24px 0;border-bottom:1px solid var(--border);">
+                  <div class="settings-item-main" style="margin-bottom:12px;">
+                    <div class="settings-item-title" style="font-size:14px;font-weight:600;color:var(--text);">授权版本</div>
+                    <div class="settings-item-desc" style="font-size:12px;color:var(--text-secondary);line-height:1.5;">当前设备所绑定卡密的授权周期</div>
+                  </div>
+                  <div class="settings-item-action">
+                    <span id="license-type" style="font-size:13px;font-weight:700;font-family:var(--font-mono);color:var(--text);">-</span>
+                  </div>
+                </div>
+                
+                <!-- 条目 2 -->
+                <div class="settings-item" style="padding:24px 0;border-bottom:1px solid var(--border);">
+                  <div class="settings-item-main" style="margin-bottom:12px;">
+                    <div class="settings-item-title" style="font-size:14px;font-weight:600;color:var(--text);">到期时间</div>
+                    <div class="settings-item-desc" style="font-size:12px;color:var(--text-secondary);line-height:1.5;">授权失效后，设备将无法继续执行自动注册任务与功能调用</div>
+                  </div>
+                  <div class="settings-item-action">
+                    <span id="license-expire" style="font-size:13px;font-weight:700;font-family:var(--font-mono);color:var(--text);">-</span>
+                  </div>
+                </div>
+                
+                <!-- 条目 3 -->
+                <div class="settings-item" style="padding:24px 0;border-bottom:none;">
+                  <div class="settings-item-main" style="margin-bottom:12px;">
+                    <div class="settings-item-title" style="font-size:14px;font-weight:600;color:var(--text);">剩余时间</div>
+                    <div class="settings-item-desc" style="font-size:12px;color:var(--text-secondary);line-height:1.5;">订阅到期前的实时倒计时</div>
+                  </div>
+                  <div class="settings-item-action">
+                    <span id="license-days-left" style="font-size:13px;font-weight:700;font-family:var(--font-mono);color:var(--text);">-</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <!-- 右侧：卡密激活 -->
+            <div style="display:flex;flex-direction:column;">
+              <div style="font-size:14px;font-weight:700;margin-bottom:20px;">验证授权</div>
+              
+              <form id="license-form-page" onsubmit="return activateLicensePage(event)" style="flex:1;display:flex;flex-direction:column;">
+                <div class="form-group" style="margin-bottom:20px;">
+                  <label style="display:block;font-size:12px;font-weight:600;color:var(--text-secondary);margin-bottom:6px;">LICENSE KEY</label>
+                  <input type="text" id="license-key-input-page" class="form-input" placeholder="XXXX-XXXX-XXXX-XXXX" required style="background:var(--bg-subtle);border:1px solid var(--border);color:var(--text);padding:12px;border-radius:10px;font-size:14px;font-family:var(--font-mono);width:100%;outline:none;text-align:center;letter-spacing:1px;">
+                  <div id="license-error-page" style="color:var(--danger);font-size:11px;margin-top:8px;display:none;">无效的卡密，请检查输入或联系供应商</div>
+                </div>
+                
+                <!-- 未激活时显示激活和购买按钮 -->
+                <div id="license-action-buttons" style="display:flex;gap:8px;margin-bottom:20px;">
+                  <button type="submit" class="btn btn-primary btn-sm" id="btn-activate-page" style="flex:1;justify-content:center;">立即激活授权</button>
+                  <button type="button" onclick="switchPage('store')" class="btn btn-secondary btn-sm" style="flex:1;justify-content:center;">购买卡密</button>
+                </div>
+                
+                <!-- 已激活时显示退出按钮 -->
+                <button type="button" id="license-logout-btn" onclick="showLogoutConfirm()" class="btn btn-danger btn-sm" style="width:100%;justify-content:center;display:none;margin-bottom:20px;">解除当前设备授权</button>
+                
+                <!-- 底部提示 -->
+                <div style="margin-top:auto;">
+                  <div style="background:var(--bg-subtle);padding:12px;border-radius:var(--radius);border:1px solid var(--border);">
+                    <div style="font-size:11px;color:var(--text-muted);line-height:1.6;">注意：卡密激活后将与当前硬件环境绑定。若需更换设备，请前往<a href="https://reg.yinxh.fun/unbind" target="_blank" style="color:var(--danger);font-weight:bold;text-decoration:underline;">自助解绑页面</a>完成解绑操作。</div>
+                  </div>
+                </div>
+              </form>
+            </div>
+            
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ===== Page: 卡网 ===== -->
+    <div class="page" id="page-store" style="height:calc(100vh - 48px);overflow:hidden;position:relative;">
+      <iframe src="https://pay.ldxp.cn/shop/8UCMT1TR" sandbox="allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox allow-forms" style="width:100%;height:calc(100% + 160px);border:none;border-radius:12px;position:relative;top:-108px;overflow:hidden;"></iframe>
+    </div>
+
+  </div>
+</div>
+
+</div>
+
+<!-- Kiro 新建任务模态框 -->
+<div id="kiro-task-modal" class="modal-overlay">
+  <div class="modal-content" style="max-width:440px;">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;">
+      <div style="display:flex;align-items:center;gap:10px;">
+        <img src="assets/kiro.svg" style="width:24px;height:24px;border-radius:6px;">
+        <h3 style="font-size:16px;font-weight:700;">Kiro 新建任务</h3>
+      </div>
+      <button onclick="closeKiroTaskModal()" style="background:none;border:none;color:var(--text-muted);font-size:28px;cursor:pointer;line-height:1;">&times;</button>
+    </div>
+    <div class="form-group" style="margin-bottom:16px;">
+      <label style="font-size:12px;font-weight:600;color:var(--text-secondary);margin-bottom:6px;display:block;">注册数量</label>
+      <input type="number" id="cfg-count" value="1" min="1" class="form-input" style="height:38px;">
+    </div>
+    <div class="form-group" style="margin-bottom:16px;">
+      <label style="font-size:12px;font-weight:600;color:var(--text-secondary);margin-bottom:8px;display:block;">邮箱提供商</label>
+      <div style="display:flex;gap:8px;">
+        <label style="flex:1;display:flex;align-items:center;justify-content:center;padding:10px;border:2px solid var(--border);border-radius:var(--radius);cursor:pointer;transition:all 0.2s;" onclick="selectEmailProvider('outlook')">
+          <input type="radio" name="email-provider" value="outlook" checked style="display:none;">
+          <div id="provider-outlook" style="display:flex;align-items:center;gap:8px;font-size:13px;font-weight:600;color:var(--text);">
+            <img src="assets/outlook.png" style="width:20px;height:20px;border-radius:4px;">
+            <span>微软邮箱</span>
+          </div>
+        </label>
+        <label style="flex:1;display:flex;align-items:center;justify-content:center;padding:10px;border:2px solid var(--border);border-radius:var(--radius);cursor:pointer;transition:all 0.2s;" onclick="selectEmailProvider('moemail')">
+          <input type="radio" name="email-provider" value="moemail" style="display:none;">
+          <div id="provider-moemail" style="display:flex;align-items:center;gap:8px;font-size:13px;font-weight:600;color:var(--text);">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:#10b981;">
+              <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+              <polyline points="22,6 12,13 2,6"></polyline>
+            </svg>
+            <span>MoeMail</span>
+          </div>
+        </label>
+      </div>
+    </div>
+    <div id="moemail-config-select" style="display:none;margin-bottom:16px;">
+      <div class="form-group" style="margin-bottom:0;">
+        <label style="font-size:12px;font-weight:600;color:var(--text-secondary);margin-bottom:6px;display:flex;align-items:center;justify-content:space-between;">
+          <span>选择域名（可多选）</span>
+          <button type="button" onclick="selectAllMoeMailDomains()" style="background:none;border:none;color:var(--primary);font-size:11px;cursor:pointer;padding:2px 6px;">全选</button>
+        </label>
+        <div id="cfg-moemail-domains-list" style="display:flex;flex-direction:column;gap:6px;max-height:160px;overflow-y:auto;padding:8px;background:var(--bg-subtle);border-radius:var(--radius);border:1px solid var(--border);">
+          <div style="text-align:center;color:var(--text-muted);font-size:12px;padding:12px;">加载中...</div>
+        </div>
+        <div style="font-size:11px;color:var(--text-muted);margin-top:6px;">邮箱名将自动生成随机字符串</div>
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;">
+      <div class="form-group" style="margin-bottom:0;">
+        <label style="font-size:12px;font-weight:600;color:var(--text-secondary);margin-bottom:6px;display:block;">并发数</label>
+        <input type="number" id="cfg-concurrency" value="1" min="1" max="10" class="form-input" style="height:38px;">
+      </div>
+      <div class="form-group" style="margin-bottom:0;">
+        <label style="font-size:12px;font-weight:600;color:var(--text-secondary);margin-bottom:6px;display:block;">延迟(秒)</label>
+        <input type="number" id="cfg-delay" value="1" min="0" class="form-input" style="height:38px;">
+      </div>
+    </div>
+    <div id="email-provider-hint" style="font-size:11px;color:var(--text-muted);margin-bottom:20px;line-height:1.5;">
+      使用微软邮箱进行注册，代理配置请在设置页设置。
+    </div>
+    <div class="btn-row">
+      <button onclick="closeKiroTaskModal()" class="btn btn-secondary" style="flex:1;justify-content:center;">取消</button>
+      <button onclick="closeKiroTaskModal();startTask()" class="btn btn-primary" style="flex:1;justify-content:center;">开始注册</button>
+    </div>
+  </div>
+</div>
+
+<!-- 微软邮箱管理模态框 -->
+<div id="outlook-modal" class="modal-overlay">
+  <div class="modal-content" style="max-width:700px;max-height:85vh;display:flex;flex-direction:column;">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;flex-shrink:0;">
+      <h3 style="font-size:16px;font-weight:700;">微软邮箱管理</h3>
+      <div style="display:flex;align-items:center;gap:12px;">
+        <span id="outlook-count" class="badge" style="font-size:11px;">0 个</span>
+        <button onclick="closeOutlookModal()" style="background:none;border:none;color:var(--text-muted);font-size:28px;cursor:pointer;line-height:1;">&times;</button>
+      </div>
+    </div>
+
+    <div style="flex:1;overflow-y:auto;">
+      <!-- 导入区 -->
+      <div class="import-zone" onclick="importOutlookFile()" style="margin-bottom:16px;">
+        <div class="import-zone-icon">
+          <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12"/>
+          </svg>
+        </div>
+        <div class="import-zone-text">点击导入微软邮箱账号文件</div>
+        <div class="import-zone-hint">支持 TXT 格式</div>
+      </div>
+
+      <!-- 手动输入 -->
+      <div style="margin-bottom:20px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+          <label style="font-size:12px;font-weight:600;color:var(--text-secondary);">手动输入</label>
+          <button onclick="addOutlookAccounts()" class="btn btn-primary btn-sm">添加到列表</button>
+        </div>
+        <textarea id="cfg-outlook-data" rows="3" placeholder="每行一个，格式：邮箱----密码----ClientID----RefreshToken" class="form-input" style="resize:none;height:80px;font-family:var(--font-mono);font-size:11px;"></textarea>
+      </div>
+
+      <!-- 邮箱列表 -->
+      <div style="border-top:1px solid var(--border);padding-top:16px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+          <span style="font-size:13px;font-weight:600;color:var(--text);">邮箱列表</span>
+          <button onclick="clearAllOutlookAccounts()" class="btn btn-danger btn-sm">清空全部</button>
+        </div>
+        <div style="overflow-x:auto;">
+          <table>
+            <thead><tr>
+              <th style="width:40px;">#</th><th>邮箱地址</th><th style="width:80px;">状态</th><th style="width:120px;">添加时间</th><th style="width:60px;text-align:right;">操作</th>
+            </tr></thead>
+            <tbody id="parsed-outlook-body"></tbody>
+          </table>
+          <div id="outlook-pager" style="display:none;padding:16px;justify-content:space-between;align-items:center;font-size:12px;color:var(--text-secondary);border-top:1px solid var(--border);">
+            <span id="outlook-pager-info"></span>
+            <div style="display:flex;gap:8px;">
+              <button onclick="changeOutlookPage(-1)" id="outlook-pager-prev" class="btn btn-secondary btn-sm">上一页</button>
+              <button onclick="changeOutlookPage(1)" id="outlook-pager-next" class="btn btn-secondary btn-sm">下一页</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MoeMail 配置管理模态框 -->
+<div id="moemail-modal" class="modal-overlay">
+  <div class="modal-content" style="max-width:700px;max-height:85vh;display:flex;flex-direction:column;">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;flex-shrink:0;">
+      <h3 style="font-size:16px;font-weight:700;">MoeMail 配置管理</h3>
+      <div style="display:flex;align-items:center;gap:12px;">
+        <span id="moemail-count" class="badge" style="font-size:11px;">0 个</span>
+        <button onclick="closeMoeMailModal()" style="background:none;border:none;color:var(--text-muted);font-size:28px;cursor:pointer;line-height:1;">&times;</button>
+      </div>
+    </div>
+
+    <div style="flex:1;overflow-y:auto;">
+      <!-- 添加新配置 -->
+      <div style="margin-bottom:20px;padding:16px;background:var(--bg-subtle);border-radius:var(--radius);border:1px solid var(--border);">
+        <div style="font-size:13px;font-weight:600;color:var(--text);margin-bottom:12px;">添加新配置</div>
+        <div class="form-group" style="margin-bottom:12px;">
+          <label style="font-size:12px;font-weight:600;color:var(--text-secondary);margin-bottom:6px;display:block;">配置名称</label>
+          <input type="text" id="moemail-name" placeholder="例如：主账号" class="form-input">
+        </div>
+        <div class="form-group" style="margin-bottom:12px;">
+          <label style="font-size:12px;font-weight:600;color:var(--text-secondary);margin-bottom:6px;display:block;">API URL</label>
+          <input type="text" id="moemail-url" placeholder="https://moemail.app" class="form-input">
+        </div>
+        <div class="form-group" style="margin-bottom:12px;">
+          <label style="font-size:12px;font-weight:600;color:var(--text-secondary);margin-bottom:6px;display:block;">API Key</label>
+          <input type="text" id="moemail-apikey" placeholder="YOUR_API_KEY" class="form-input">
+        </div>
+        <div style="display:flex;gap:8px;">
+          <button onclick="testMoeMailConnection()" class="btn btn-secondary btn-sm">测试连接</button>
+          <button onclick="addMoeMailConfig()" class="btn btn-primary btn-sm">添加配置</button>
+        </div>
+        <div id="moemail-test-result" style="margin-top:12px;font-size:12px;display:none;"></div>
+      </div>
+
+      <!-- 配置列表 -->
+      <div style="border-top:1px solid var(--border);padding-top:16px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+          <span style="font-size:13px;font-weight:600;color:var(--text);">配置列表</span>
+          <button onclick="clearAllMoeMailConfigs()" class="btn btn-danger btn-sm">清空全部</button>
+        </div>
+        <div style="overflow-x:auto;">
+          <table>
+            <thead><tr>
+              <th style="width:40px;">#</th>
+              <th>名称</th>
+              <th>URL</th>
+              <th style="width:60px;">状态</th>
+              <th style="width:100px;text-align:right;">操作</th>
+            </tr></thead>
+            <tbody id="moemail-config-body"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 详情模态框 -->
+<div id="detail-modal" class="modal-overlay">
+  <div class="modal-content">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:24px;">
+      <h3 style="font-size:16px;font-weight:700;">账号详情</h3>
+      <button onclick="closeDetail()" style="background:none;border:none;color:var(--text-muted);font-size:28px;cursor:pointer;line-height:1;">&times;</button>
+    </div>
+    <div id="detail-content" style="font-size:13px;line-height:1.8;"></div>
+    <div class="btn-row" style="margin-top:24px;justify-content:flex-end;">
+      <button onclick="copyDetail()" class="btn btn-secondary">复制 JSON</button>
+      <button onclick="closeDetail()" class="btn btn-primary">确认</button>
+    </div>
+  </div>
+</div>
+
+<!-- 导入代理 URL 模态框 -->
+<div id="proxy-url-modal" class="modal-overlay">
+  <div class="modal-content" style="max-width:400px;">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:20px;">
+      <h3 style="font-size:16px;font-weight:700;">从 URL 导入代理 YAML</h3>
+      <button onclick="closeProxyUrlModal()" style="background:none;border:none;color:var(--text-muted);font-size:24px;cursor:pointer;line-height:1;">&times;</button>
+    </div>
+    <div class="form-group" style="margin-bottom:20px;">
+      <label style="font-size:12px;font-weight:600;color:var(--text-secondary);display:block;margin-bottom:8px;">请输入获取代理 YAML 的链接</label>
+      <input type="text" id="proxy-url-input" class="form-input" placeholder="https://..." style="width:100%;font-size:12px;font-family:var(--font-mono);">
+    </div>
+    <div class="btn-row" style="justify-content:flex-end;">
+      <button onclick="closeProxyUrlModal()" class="btn btn-secondary">取消</button>
+      <button onclick="submitProxyUrlImport()" class="btn btn-primary" style="background:#6366f1;border-color:#6366f1;">确认导入</button>
+    </div>
+  </div>
+</div>
+
+<script src="js/accounts.js"></script>
+<script src="js/moemail.js"></script>
+<script src="js/task.js"></script>
+<script src="js/overview.js"></script>
+<script src="js/proxy.js"></script>
+
+<script src="js/license.js"></script>
+<script src="js/ui.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>

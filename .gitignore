@@ -1,0 +1,38 @@
+# Build output
+build/bin/
+build/windows/
+build/appicon.png
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.syso
+
+# VMP protection
+vmp/
+
+# Frontend build artifacts
+frontend/dist/
+frontend/node_modules/
+
+# Go
+*.test
+*.out
+*.prof
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Temp
+*.tmp
+*.log

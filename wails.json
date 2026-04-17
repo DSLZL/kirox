@@ -1,0 +1,22 @@
+{
+  "$schema": "https://wails.io/schemas/config.v2.json",
+  "name": "Kiro注册机",
+  "outputfilename": "kiro-reg",
+  "frontend:install": "npm install",
+  "frontend:build": "npm run build",
+  "author": {
+    "name": "1in",
+    "email": "2926957031@qq.com"
+  },
+  "info": {
+    "companyName": "Kiro",
+    "productName": "Kiro注册机",
+    "productVersion": "1.0.0",
+    "copyright": "Copyright © 2026",
+    "comments": "AWS Builder ID 自动注册工具",
+    "icon": "build/appicon.png"
+  },
+  "wailsjsdir": "./frontend",
+  "assetdir": "./frontend/dist",
+  "build:dir": "./build"
+}
