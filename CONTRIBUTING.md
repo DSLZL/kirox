@@ -18,8 +18,8 @@
 # - Node.js 20+
 # - Wails CLI: go install github.com/wailsapp/wails/v2/cmd/wails@latest
 
-git clone https://github.com/huey1in/kiro_reg.git
-cd kiro_reg
+git clone https://github.com/huey1in/kirox.git
+cd kirox
 wails dev   # 启动开发模式
 ```
 

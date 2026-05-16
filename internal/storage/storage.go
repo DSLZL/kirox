@@ -32,7 +32,7 @@ func GetDefaultDataDir() string {
 	if err != nil {
 		configDir = "."
 	}
-	return filepath.Join(configDir, "kiro-reg")
+	return filepath.Join(configDir, "kirox")
 }
 
 // getConfigFilePath 获取配置文件路径（始终在默认目录下）

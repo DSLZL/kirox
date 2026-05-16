@@ -67,7 +67,7 @@ type githubRelease struct {
 	} `json:"assets"`
 }
 
-const githubReleasesURL = "https://api.github.com/repos/huey1in/kiro_reg/releases/latest"
+const githubReleasesURL = "https://api.github.com/repos/huey1in/kirox/releases/latest"
 
 // semverGreater 返回 a 是否语义上大于 b（格式 vX.Y.Z 或 X.Y.Z）
 func semverGreater(a, b string) bool {
@@ -102,7 +102,7 @@ func CheckUpdate() map[string]interface{} {
 		return map[string]interface{}{"error": "构建请求失败: " + err.Error()}
 	}
 	req.Header.Set("Accept", "application/vnd.github+json")
-	req.Header.Set("User-Agent", "kiro-reg/"+currentVersion)
+	req.Header.Set("User-Agent", "kirox/"+currentVersion)
 
 	resp, err := client.Do(req)
 	if err != nil {
@@ -270,7 +270,7 @@ func DownloadUpdate(ctx context.Context) map[string]interface{} {
 	}
 
 	// 保存到临时文件
-	newExeName := "kiro-reg-new"
+	newExeName := "kirox-new"
 	if runtime.GOOS == "windows" {
 		newExeName += ".exe"
 	}

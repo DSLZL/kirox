@@ -88,7 +88,7 @@ Kiro 注册机是一款基于 [Wails v2](https://wails.io) 构建的桌面应用
 
 ### 直接使用
 
-从 [Releases](https://github.com/huey1in/kiro_reg/releases/latest) 下载最新的 `kiro-reg.exe`，双击运行即可。
+从 [Releases](https://github.com/huey1in/kirox/releases/latest) 下载最新的 `kirox.exe`，双击运行即可。
 
 ### 从源码构建
 
@@ -102,7 +102,7 @@ Kiro 注册机是一款基于 [Wails v2](https://wails.io) 构建的桌面应用
 go install github.com/wailsapp/wails/v2/cmd/wails@latest
 
 # 克隆仓库
-git clone https://github.com/huey1in/kiro_reg.git
+git clone https://github.com/huey1in/kirox.git
 cd kiro_reg
 
 # 开发模式（热重载）
