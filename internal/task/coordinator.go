@@ -90,12 +90,14 @@ func startTask(req StartTaskRequest) map[string]interface{} {
 				password, _ := acc["password"].(string)
 				clientID, _ := acc["clientId"].(string)
 				refreshToken, _ := acc["refreshToken"].(string)
+				mode, _ := acc["mode"].(string)
 
 				outlookAccounts = append(outlookAccounts, email.OutlookAccount{
 					Email:        emailAddr,
 					Password:     password,
 					ClientID:     clientID,
 					RefreshToken: refreshToken,
+					Mode:         mode,
 				})
 			}
 		}
