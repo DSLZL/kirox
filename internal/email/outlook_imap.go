@@ -25,6 +25,7 @@ type OutlookAccount struct {
 	Password     string
 	ClientID     string
 	RefreshToken string
+	Mode         string
 }
 
 // ParseOutlookCSV 解析 outlook.csv
@@ -41,17 +42,12 @@ func ParseOutlookCSV(path string) ([]OutlookAccount, error) {
 		if line == "" {
 			continue
 		}
-		parts := strings.SplitN(line, "----", 4)
-		if len(parts) != 4 {
+		acc, ok := parseOutlookAccountLine(line)
+		if !ok {
 			log.Printf("跳过格式错误的行: %s", line[:min(50, len(line))])
 			continue
 		}
-		accounts = append(accounts, OutlookAccount{
-			Email:        parts[0],
-			Password:     parts[1],
-			ClientID:     parts[2],
-			RefreshToken: parts[3],
-		})
+		accounts = append(accounts, acc)
 	}
 	return accounts, nil
 }
@@ -80,14 +76,8 @@ func ParseOutlookLines(data string) []OutlookAccount {
 			if part == "" {
 				continue
 			}
-			fields := strings.SplitN(part, "----", 4)
-			if len(fields) == 4 {
-				accounts = append(accounts, OutlookAccount{
-					Email:        strings.TrimSpace(fields[0]),
-					Password:     strings.TrimSpace(fields[1]),
-					ClientID:     strings.TrimSpace(fields[2]),
-					RefreshToken: strings.TrimSpace(fields[3]),
-				})
+			if acc, ok := parseOutlookAccountLine(part); ok {
+				accounts = append(accounts, acc)
 			}
 		}
 	} else {
@@ -97,19 +87,44 @@ func ParseOutlookLines(data string) []OutlookAccount {
 			if line == "" {
 				continue
 			}
-			parts := strings.SplitN(line, "----", 4)
-			if len(parts) == 4 {
-				accounts = append(accounts, OutlookAccount{
-					Email:        strings.TrimSpace(parts[0]),
-					Password:     strings.TrimSpace(parts[1]),
-					ClientID:     strings.TrimSpace(parts[2]),
-					RefreshToken: strings.TrimSpace(parts[3]),
-				})
+			if acc, ok := parseOutlookAccountLine(line); ok {
+				accounts = append(accounts, acc)
 			}
 		}
 	}
 
 	return accounts
+}
+
+func parseOutlookAccountLine(line string) (OutlookAccount, bool) {
+	parts := strings.SplitN(strings.TrimSpace(line), "----", 5)
+	if len(parts) != 4 && len(parts) != 5 {
+		return OutlookAccount{}, false
+	}
+	mode := "imap"
+	if len(parts) == 5 {
+		mode = normalizeOutlookMode(parts[4])
+	}
+	return OutlookAccount{
+		Email:        strings.TrimSpace(parts[0]),
+		Password:     strings.TrimSpace(parts[1]),
+		ClientID:     strings.TrimSpace(parts[2]),
+		RefreshToken: strings.TrimSpace(parts[3]),
+		Mode:         mode,
+	}, true
+}
+
+func normalizeOutlookMode(mode string) string {
+	switch strings.ToLower(strings.TrimSpace(mode)) {
+	case "graph":
+		return "graph"
+	default:
+		return "imap"
+	}
+}
+
+func (a OutlookAccount) mailMode() string {
+	return normalizeOutlookMode(a.Mode)
 }
 
 // RefreshOutlookToken 用 refresh_token 获取 access_token（优先走全局代理，失败时降级直连）
@@ -372,14 +387,18 @@ func (c *imapClient) fetchLatestBody(seq int) (string, error) {
 
 // WaitForOTP 通过 IMAP 轮询等待 AWS 验证码
 func WaitForOTP(acc OutlookAccount, beforeCount, timeout, interval int) (string, error) {
-	log.Printf("[Outlook IMAP] 等待验证码, 邮箱=%s, 发送前邮件数=%d", acc.Email, beforeCount)
+	codeRegex := regexp.MustCompile(`\b(\d{6})\b`)
+	if acc.mailMode() == "graph" {
+		log.Printf("[Outlook Graph] 等待验证码, 邮箱=%s, 发送前邮件数=%d", acc.Email, beforeCount)
+		return waitForOTPGraph(acc, beforeCount, timeout, interval, codeRegex)
+	}
 
+	log.Printf("[Outlook IMAP] 等待验证码, 邮箱=%s, 发送前邮件数=%d", acc.Email, beforeCount)
 	accessToken, err := RefreshOutlookToken(acc)
 	if err != nil {
 		return "", fmt.Errorf("刷新 Outlook Token 失败: %v", err)
 	}
 
-	codeRegex := regexp.MustCompile(`\b(\d{6})\b`)
 	maxRetries := timeout / interval
 	consecutiveSelectFail := 0
 	maxConsecutiveSelectFail := 3 // 连续 3 次 SELECT 失败则提前放弃，避免单账号卡住整批
@@ -447,6 +466,9 @@ func WaitForOTP(acc OutlookAccount, beforeCount, timeout, interval int) (string,
 
 // GetInboxCount 获取收件箱当前邮件数量（带完整重连重试）
 func GetInboxCount(acc OutlookAccount) (int, error) {
+	if acc.mailMode() == "graph" {
+		return getInboxCountGraph(acc)
+	}
 	accessToken, err := RefreshOutlookToken(acc)
 	if err != nil {
 		return 0, fmt.Errorf("刷新 Outlook Token 失败: %v", err)

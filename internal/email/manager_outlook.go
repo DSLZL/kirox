@@ -49,6 +49,7 @@ func AddOutlookAccounts(data string) map[string]interface{} {
 					"password":     acc.Password,
 					"clientId":     acc.ClientID,
 					"refreshToken": acc.RefreshToken,
+					"mode":         acc.mailMode(),
 					"registered":   false,
 					"success":      false,
 					"addedAt":      now,
