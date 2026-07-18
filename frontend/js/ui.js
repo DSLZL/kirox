@@ -164,15 +164,17 @@ function selectEmailProvider(provider) {
   const outlookBtn = document.querySelector('label[onclick*="outlook"]');
   const moemailBtn = document.querySelector('label[onclick*="moemail"]');
   const cloudmailBtn = document.querySelector('label[onclick*="cloudmail"]');
+  const mailnestBtn = document.querySelector('label[onclick*="mailnest"]');
 
   // 全部还原
-  [outlookBtn, moemailBtn, cloudmailBtn].forEach(b => {
+  [outlookBtn, moemailBtn, cloudmailBtn, mailnestBtn].forEach(b => {
     if (b) { b.style.borderColor = 'var(--border)'; b.style.background = 'transparent'; }
   });
 
   let activeBtn = outlookBtn;
   if (provider === 'moemail') activeBtn = moemailBtn;
   else if (provider === 'cloudmail') activeBtn = cloudmailBtn;
+  else if (provider === 'mailnest') activeBtn = mailnestBtn;
   if (activeBtn) {
     activeBtn.style.borderColor = 'var(--primary)';
     activeBtn.style.background = 'rgba(59, 130, 246, 0.1)';
@@ -196,10 +198,14 @@ function selectEmailProvider(provider) {
     hintDiv.textContent = _uiT('register.cloudmailHint', '使用 Cloud-Mail 自部署邮箱注册。⚠️ 每次注册会创建永久账号，需手动清理。');
     hintDiv.setAttribute('data-i18n', 'register.cloudmailHint');
     loadCloudMailDomainsToList();
-  } else {
+  } else if (provider === 'outlook') {
     hintDiv.removeAttribute('data-i18n');
     hintDiv.textContent = _uiT('register.outlookHintFull', '使用微软邮箱进行注册，代理配置请在设置页设置。');
     hintDiv.setAttribute('data-i18n', 'register.outlookHintFull');
+  } else {
+    hintDiv.removeAttribute('data-i18n');
+    hintDiv.textContent = _uiT('register.mailnestHintFull', '使用 MailNest 提供的临时 Outlook 邮箱进行注册，代理配置请在设置页设置。');
+    hintDiv.setAttribute('data-i18n', 'register.mailnestHintFull');
   }
 }
 

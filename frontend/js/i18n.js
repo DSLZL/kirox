@@ -73,7 +73,8 @@
         cloudmailWarn: '⚠️ 每次注册会在 Cloud-Mail 上创建一个永久账号，需手动清理',
         outlookHintFull: '使用微软邮箱进行注册，代理配置请在设置页设置。',
         modeRandom: '随机', modeRoundRobin: '轮询',
-        startBtn: '开始注册', stopBtn: '停止'
+        startBtn: '开始注册', stopBtn: '停止',
+        mailnestHintFull: '使用 MailNest 提供的临时 Outlook 邮箱进行注册，代理配置请在设置页设置。',
       },
       accounts: {
         moemailTitle: 'MoeMail 临时邮箱', cloudmailTitle: 'Cloud-Mail 自部署邮箱', addConfig: '添加新配置',
@@ -110,7 +111,9 @@
         allCleared: '已清空所有账号',
         noRegistered: '没有已注册的账号',
         clearRegisteredTitle: '清除已注册',
-        clearRegisteredMsg: '确认删除 {n} 个已注册（成功/失败）的账号？'
+        clearRegisteredMsg: '确认删除 {n} 个已注册（成功/失败）的账号？',
+        mailnestTitle: 'MailNest 临时邮箱',
+        projectCode: '项目代码',
       },
       subscription: {
         accountList: '账号列表', autoLoaded: '已自动加载输出文件夹中的账号',
@@ -259,7 +262,13 @@
         allCleared: '已清空所有配置',
         noDomainsHint: '暂无配置，请先在邮箱池页添加',
         noActiveDomain: '暂无可用域名，请先测试 Cloud-Mail 配置'
-      }
+      },
+      mailnest: {
+        requiredKeyProjectCodeShort: '请填写 Key 和 项目代码',
+        balance: '测试成功，余额为 {n}',
+        summaryNone: "未配置",
+        summaryActive: "已配置",
+      },
     },
     en: {
       nav: {
@@ -324,7 +333,8 @@
         cloudmailWarn: '⚠️ Each registration creates a permanent account on Cloud-Mail. Clean up manually.',
         outlookHintFull: 'Register using Microsoft mailboxes. Configure proxy in Settings.',
         modeRandom: 'Random', modeRoundRobin: 'Round-robin',
-        startBtn: 'Start', stopBtn: 'Stop'
+        startBtn: 'Start', stopBtn: 'Stop',
+        mailnestHintFull: 'Register using the temporary Outlook email account provided by MailNest. Please configure your proxy settings on the Settings page.',
       },
       accounts: {
         moemailTitle: 'MoeMail temp mail', cloudmailTitle: 'Cloud-Mail (self-hosted)', addConfig: 'Add config',
@@ -361,7 +371,9 @@
         allCleared: 'All accounts cleared',
         noRegistered: 'No registered accounts',
         clearRegisteredTitle: 'Clear registered',
-        clearRegisteredMsg: 'Delete {n} registered (success/failed) accounts?'
+        clearRegisteredMsg: 'Delete {n} registered (success/failed) accounts?',
+        mailnestTitle: 'MailNest temp mail',
+        projectCode: 'Project code',
       },
       subscription: {
         accountList: 'Accounts', autoLoaded: 'Auto-loaded accounts from output folder',
@@ -510,7 +522,13 @@
         allCleared: 'All configs cleared',
         noDomainsHint: 'No configs yet. Add one in the Emails page first.',
         noActiveDomain: 'No active domains. Please test your Cloud-Mail configs first.'
-      }
+      },
+      mailnest: {
+        requiredKeyProjectCodeShort: 'Please enter the Key and Project Code',
+        balance: 'Test successful, balance is {n}',
+        summaryNone: "Not configured",
+        summaryActive: "Configured",
+      },
     },
     ja: {
       nav: {
@@ -575,7 +593,8 @@
         cloudmailWarn: '⚠️ 登録のたびに Cloud-Mail 上で永続的なアカウントが作成されます。手動で削除してください。',
         outlookHintFull: 'Microsoft メールで登録します。プロキシは設定ページで構成してください。',
         modeRandom: 'ランダム', modeRoundRobin: 'ラウンドロビン',
-        startBtn: '登録開始', stopBtn: '停止'
+        startBtn: '登録開始', stopBtn: '停止',
+        mailnestHintFull: 'MailNestが提供する一時的なOutlookメールアカウントを使用して登録してください。プロキシの設定は、設定ページで行ってください。',
       },
       accounts: {
         moemailTitle: 'MoeMail 使い捨てメール', cloudmailTitle: 'Cloud-Mail (自己ホスト型)', addConfig: '新規追加',
@@ -612,7 +631,9 @@
         allCleared: 'すべてのアカウントをクリアしました',
         noRegistered: '登録済みアカウントはありません',
         clearRegisteredTitle: '登録済みを削除',
-        clearRegisteredMsg: '{n} 件の登録済み (成功/失敗) アカウントを削除しますか?'
+        clearRegisteredMsg: '{n} 件の登録済み (成功/失敗) アカウントを削除しますか?',
+        mailnestTitle: 'MailNest 使い捨てメール',
+        projectCode: 'プロジェクトコード',
       },
       subscription: {
         accountList: 'アカウント一覧', autoLoaded: '出力フォルダのアカウントを自動読み込み済み',
@@ -761,7 +782,13 @@
         allCleared: '全ての設定を削除しました',
         noDomainsHint: '設定なし。先にメールページで追加してください。',
         noActiveDomain: '利用可能なドメインがありません。先に Cloud-Mail 設定をテストしてください。'
-      }
+      },
+      mailnest: {
+        requiredKeyProjectCodeShort: '「Key」と「プロジェクトコード」をご入力ください',
+        balance: 'テストは成功しました。残高は {n} です。',
+        summaryNone: "未設定",
+        summaryActive: "設定済み",
+      },
     }
   };
 

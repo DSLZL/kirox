@@ -356,7 +356,12 @@ function getFormConfig() {
       config.cloudmailRandomMode = false;
     }
   }
-
+  if (config.emailProvider === 'mailnest') {
+    config.mailNestConfig = {
+      apiKey: document.getElementById('mailnest-inline-apikey').value,
+      projectCode: document.getElementById('mailnest-inline-project-code').value
+    };
+  }
   return config;
 }
 

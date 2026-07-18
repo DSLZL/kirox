@@ -18,8 +18,8 @@ type TempEmailService interface {
 
 // moEmailAdapter 适配器，将 MoeMailProvider 包装为 TempEmailService
 type moEmailAdapter struct {
-	baseURL string
-	apiKey  string
+	baseURL  string
+	apiKey   string
 	provider *MoeMailProvider
 }
 
@@ -117,4 +117,48 @@ func (a *cloudMailAdapter) GetAddress() string {
 		return ""
 	}
 	return a.provider.GetAddress()
+}
+
+// mailNestEmailAdapter 适配器
+type mailNestEmailAdapter struct {
+	provider *MailNestProvider
+}
+
+// NeMailNestServiceFromProvider 用已创建的 MailNestProvider 构造 TempEmailService
+func NeMailNestServiceFromProvider(provider *MailNestProvider) TempEmailService {
+	return &mailNestEmailAdapter{provider: provider}
+}
+
+// Create 发请求获取 email
+func (a *mailNestEmailAdapter) Create() string {
+	if a.provider == nil {
+		return ""
+	}
+	address, err := a.provider.GetAddress()
+	if err != nil {
+		log.Print(err)
+		return ""
+	}
+	return address
+}
+
+// WaitForCode 等待验证码
+func (a *mailNestEmailAdapter) WaitForCode(timeout, interval int) (string, error) {
+	if a.provider == nil {
+		return "", nil
+	}
+	return a.provider.WaitForCode(timeout, interval)
+}
+
+// GetAddress 获取邮箱地址
+func (a *mailNestEmailAdapter) GetAddress() string {
+	if a.provider == nil {
+		return ""
+	}
+	address, err := a.provider.GetAddress()
+	if err != nil {
+		log.Print(err)
+		return ""
+	}
+	return address
 }

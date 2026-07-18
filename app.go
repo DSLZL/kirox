@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"github.com/wailsapp/wails/v2/pkg/runtime"
 	"log"
 	"os"
 	"reg_go/internal/browser"
@@ -10,6 +9,8 @@ import (
 	"reg_go/internal/email"
 	"reg_go/internal/proxy"
 	"reg_go/internal/subscription"
+
+	"github.com/wailsapp/wails/v2/pkg/runtime"
 
 	"reg_go/internal/storage"
 	"reg_go/internal/task"
@@ -213,7 +214,19 @@ func (a *App) ImportOutlookFile(filePath string) map[string]interface{} {
 	return email.ImportOutlookFile(filePath)
 }
 
-// ---- Wails 专用对话框 ----
+// ---- MailNest ----
+
+func (a *App) TestMailNestConnection(configJSON string) map[string]interface{} {
+	return email.TestMailNestConnection(configJSON)
+}
+
+func (a *App) SaveMailNestConfig(configsJSON string) map[string]interface{} {
+	return email.SaveMailNestConfig(configsJSON)
+}
+
+func (a *App) GetMailNestConfig() email.MailNestConfig {
+	return email.GetMailNestConfig()
+}
 
 // SelectDirectory 选择目录 (Wails Dialog)
 func (a *App) SelectDirectory() string {

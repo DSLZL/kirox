@@ -28,9 +28,11 @@ type StartTaskRequest struct {
 	MoeMailConfigs    map[string][]email.MoeMailConfig `json:"moemailConfigs"`    // 域名 -> 配置列表映射
 	MoeMailRandomMode bool                             `json:"moemailRandomMode"` // 是否为随机模式
 
-	CloudMailDomains    []string                            `json:"cloudmailDomains"`
-	CloudMailConfigs    map[string][]email.CloudMailConfig  `json:"cloudmailConfigs"`
-	CloudMailRandomMode bool                                `json:"cloudmailRandomMode"`
+	CloudMailDomains    []string                           `json:"cloudmailDomains"`
+	CloudMailConfigs    map[string][]email.CloudMailConfig `json:"cloudmailConfigs"`
+	CloudMailRandomMode bool                               `json:"cloudmailRandomMode"`
+
+	MailNestConfig email.MailNestConfig `json:"mailNestConfig"`
 }
 
 // StartTask 公开方法（包装器）
@@ -73,6 +75,12 @@ func startTask(req StartTaskRequest) map[string]interface{} {
 		if len(req.CloudMailConfigs) == 0 {
 			Manager.mu.Unlock()
 			return map[string]interface{}{"error": "cloud-mail 配置缺失"}
+		}
+	} else if emailProvider == "mailnest" {
+		config := email.GetMailNestConfig()
+		if config == (email.MailNestConfig{}) {
+			Manager.mu.Unlock()
+			return map[string]interface{}{"error": "请先配置 MailNest"}
 		}
 	} else {
 		// Outlook 模式：加载账号列表
@@ -211,6 +219,8 @@ func runBatch(req StartTaskRequest, emailProvider string, outlookAccounts []emai
 		log.Printf("[Kiro] MoeMail 域名池: %v (共 %d 个域名)", moemailDomainPool, len(moemailDomainPool))
 	} else if emailProvider == "outlook" {
 		taskConfig.UseOutlook = true
+	} else if emailProvider == "mailnest" {
+		taskConfig.UseMailNest = true
 	}
 
 	// 预先准备 CloudMail 域名池
@@ -368,6 +378,22 @@ func runBatch(req StartTaskRequest, emailProvider string, outlookAccounts []emai
 			cfgCopy := config
 			taskCfg.CloudMailConfig = &cfgCopy
 			currentEmail = provider.GetAddress()
+		} else if emailProvider == "mailnest" {
+			config := req.MailNestConfig
+			provider := email.NewMailNestProvider(config)
+			address, err := provider.GetAddress()
+			if err != nil {
+				log.Printf("[Kiro][%d/%d] 生成 mailenest 邮箱失败: %v", i+1, req.Count, err)
+				Manager.mu.Lock()
+				Manager.completed++
+				Manager.failed++
+				Manager.mu.Unlock()
+				return
+			}
+			taskCfg.MailNestProvider = provider
+			cfgCopy := config
+			taskCfg.MailNestConfig = &cfgCopy
+			currentEmail = address
 		}
 
 		log.Printf("[Kiro][%d/%d] 开始注册", i+1, req.Count)
@@ -621,10 +647,10 @@ func isKillSwitchError(errorMsg string) bool {
 		return false
 	}
 	triggers := []string{
-		"send-otp 失败 (400)",     // Step9 原始 400
-		"注册被拦截",                // formatError 对 BLOCKED/注册请求被拦截 的翻译
-		"IP或浏览器指纹被检测",    // 指纹/IP 被标记
-		"BLOCKED",                  // 响应体里直接包含的风控标记
+		"send-otp 失败 (400)", // Step9 原始 400
+		"注册被拦截",             // formatError 对 BLOCKED/注册请求被拦截 的翻译
+		"IP或浏览器指纹被检测",       // 指纹/IP 被标记
+		"BLOCKED",           // 响应体里直接包含的风控标记
 		"注册请求被拦截",
 	}
 	for _, t := range triggers {

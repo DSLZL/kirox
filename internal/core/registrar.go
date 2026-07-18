@@ -67,8 +67,8 @@ func NewRegistrar(cfg *Config) *Registrar {
 	// 按代理绑定稳定指纹：同一出口 IP 下短时间内重复使用同一硬件身份，
 	// 只有 lsubid 前缀 / webpackHash 等真实浏览器会话间也会变的字段每次刷新。
 	identity := browser.IdentityForProxy(cfg.Proxy)
-	log.Printf("[指纹] Chrome: %s | GPU: %s | 内存: %dGB | 核心: %d | 分辨率: %dx%d (%d-bit)", 
-		identity.ChromeVer, identity.GPUModel, identity.DeviceMemory, identity.HardwareConcurrency, 
+	log.Printf("[指纹] Chrome: %s | GPU: %s | 内存: %dGB | 核心: %d | 分辨率: %dx%d (%d-bit)",
+		identity.ChromeVer, identity.GPUModel, identity.DeviceMemory, identity.HardwareConcurrency,
 		identity.Screen.Width, identity.Screen.Height, identity.Screen.ColorDepth)
 
 	client := httputil.NewTLSClient(cfg.Proxy, true, identity.ChromeVer)
@@ -307,6 +307,13 @@ func (r *Registrar) Step3Email() error {
 	if r.Cfg.UseMoeMail && r.Cfg.MoeMailProvider != nil {
 		log.Println("[3] 使用 MoeMail 邮箱（已创建）")
 		r.EmailSvc = email.NewMoEmailServiceFromProvider(r.Cfg.MoeMailProvider)
+		r.Email = r.EmailSvc.GetAddress()
+		log.Printf("email=%s", r.Email)
+		return nil
+	}
+	if r.Cfg.UseMailNest && r.Cfg.MailNestProvider != nil {
+		log.Println("[3] 使用 MailNest 邮箱")
+		r.EmailSvc = email.NeMailNestServiceFromProvider(r.Cfg.MailNestProvider)
 		r.Email = r.EmailSvc.GetAddress()
 		log.Printf("email=%s", r.Email)
 		return nil
