@@ -5,7 +5,7 @@
 <h1 align="center">KiroX</h1>
 
 <p align="center">
-  AWS Builder ID (Kiro) アカウント一括自動登録ツール
+  Kiro 登録ツール
 </p>
 
 <p align="center">
@@ -19,8 +19,6 @@
   <img src="https://img.shields.io/badge/platform-Windows%20%7C%20macOS%20%7C%20Linux-0078d4?style=flat-square" alt="platform">
   <img src="https://img.shields.io/badge/Go-1.24-00ADD8?style=flat-square&logo=go" alt="go">
   <img src="https://img.shields.io/badge/Wails-v2-red?style=flat-square" alt="wails">
-   <a href="https://linux.do"><img src="https://img.shields.io/badge/LINUX%20DO-コミュニティ-f0b752?style=flat-square" alt="LINUX
-   DO"></a>
   <img src="https://img.shields.io/badge/license-Apache%202.0-green?style=flat-square" alt="license">
 </p>
 
@@ -28,14 +26,14 @@
 
 ## 概要
 
-KiroX は [Wails v2](https://wails.io) ベースのデスクトップアプリで、AWS Builder ID アカウントの一括登録を自動化します。Outlook メールボックスプール、MoeMail 使い捨てメール、セルフホスト型 Cloud-Mail の 3 種類のメールソースに対応し、ブラウザフィンガープリント偽装・並列制御・プロキシを内蔵しています。
+KiroX は [Wails v2](https://wails.io) ベースの Kiro 登録ツールで、HTTP/TLS プロトコルだけで実装されています。プロトコルリクエストだけでアカウント登録、メール認証、認可、Kiro トークン交換を行います。Outlook メールボックスプール、MoeMail 使い捨てメール、MailNest 一時メール、セルフホスト型 Cloud-Mail を利用でき、並列制御とプロキシにも対応します。
 
 ---
 
 ## 機能
 
-**登録フロー**
-- AWS Builder ID 登録の 15 ステップ完全自動化（OIDC 登録 → デバイス認可 → メール認証 → パスワード設定 → SSO → Kiro トークン交換）
+**Kiro 登録フロー**
+- 15 ステップのプロトコル登録処理を完全自動化（OIDC 登録 → デバイス認可 → メール認証 → パスワード設定 → SSO → Kiro トークン交換）
 - 登録後にアカウントの生存確認を自動実行
 - バッチ処理：登録件数 / 並行数 / タスク間隔をすべて設定可能
 
@@ -44,11 +42,8 @@ KiroX は [Wails v2](https://wails.io) ベースのデスクトップアプリ�
 - **MoeMail 使い捨てメール**：複数ドメイン設定、自動ローテーション、ランダム / 全て / 指定ドメインモード
 - **Cloud-Mail（セルフホスト）**：[cloud-mail](https://github.com/jiangrungen/cloud-mail) と連携、ドメインはサーバーから自動取得可能、ランダム / ラウンドロビン / 指定モード
 
-**検出対策**
-- Chrome バージョンのランダム化（120–144）
-- デバイスフィンガープリントのランダム化（GPU、メモリ、CPU コア、画面解像度）
-- WebGL 拡張の偽装、Canvas フィンガープリント生成
-- `tls-client` による TLS フィンガープリント偽装
+**純粋なプロトコルとネットワーク**
+- `tls-client` による HTTP/TLS クライアントとリクエストパラメータ設定
 
 **データ管理**
 - 登録成功アカウントは設定可能な出力ディレクトリに平文 JSON で書き出し
@@ -62,6 +57,19 @@ KiroX は [Wails v2](https://wails.io) ベースのデスクトップアプリ�
 **バージョン更新**
 - GitHub Releases の最新バージョンを確認（セマンティックバージョン比較）
 - Releases ページを開き、手動でダウンロードとインストールを行う
+
+---
+
+## 今後の方向性
+
+KiroX は現在、大規模なアーキテクチャリファクタリングを準備しています。今後は次の方向を予定しています：
+
+- **デスクトップ GUI から WebUI へ**：フロントエンドとバックエンドを段階的に分離し、ブラウザアクセスやサーバー運用などに対応します。
+- **2API を内蔵**：AWS CodeWhisperer の機能を標準的な OpenAI API および Anthropic API のエンドポイントへ適応し、既存のクライアントや開発ツールから利用しやすくします。
+- **登録タスクとアカウント管理の強化**：タスク編成、アカウント管理、認証情報のライフサイクル、実行監視を統合します。
+- **サービス境界の整理**：今後のモデルアダプター、プロキシ戦略、自動化機能の拡張に備えます。
+
+これらは開発状況に応じて段階的に実装します。現行版は引き続き Wails デスクトップ体験を中心とします。
 
 ---
 
@@ -159,7 +167,7 @@ kirox/
 ├── main.go                    # エントリポイント、Wails 初期化
 ├── app.go                     # App 構造体、Wails バインドメソッド
 ├── internal/
-│   ├── core/                  # 登録コア（15 ステップフロー）
+│   ├── core/                  # Kiro 登録コア
 │   │   ├── registrar.go       # Registrar 構造体、HTTP クライアント
 │   │   ├── run.go             # ステップオーケストレーション
 │   │   ├── auth.go            # ステップ 1–5
@@ -168,8 +176,8 @@ kirox/
 │   │   ├── kiro_auth.go       # ステップ 13–14
 │   │   ├── kiro_exchange.go   # ステップ 15
 │   │   └── verify.go          # アカウント生存確認
-│   ├── browser/               # ブラウザフィンガープリント
-│   ├── email/                 # メールプロバイダ（Outlook / MoeMail / Cloud-Mail）
+│   ├── browser/               # プロトコルリクエストの識別情報生成
+│   ├── email/                 # メールプロバイダ（Outlook / MoeMail / MailNest / Cloud-Mail）
 │   ├── crypto/                # JWE 暗号化、XXTEA
 │   ├── storage/               # アカウント保存、設定永続化
 │   ├── task/                  # バッチスケジューリング、並行制御
@@ -196,6 +204,8 @@ kirox/
 | HTTP クライアント | [bogdanfinn/tls-client](https://github.com/bogdanfinn/tls-client) |
 | フロントエンド | ネイティブ HTML / CSS / JavaScript |
 | 暗号化 | RSA-OAEP-256 + AES-256-GCM (JWE) |
+
+現行版は引き続き Wails デスクトップアプリを中心とし、将来のリファクタリングで WebUI へ移行する可能性があります。
 
 ---
 

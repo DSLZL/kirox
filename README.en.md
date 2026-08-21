@@ -5,7 +5,7 @@
 <h1 align="center">KiroX</h1>
 
 <p align="center">
-  Batch automation tool for AWS Builder ID (Kiro) registration
+  Kiro registration tool
 </p>
 
 <p align="center">
@@ -19,8 +19,6 @@
   <img src="https://img.shields.io/badge/platform-Windows%20%7C%20macOS%20%7C%20Linux-0078d4?style=flat-square" alt="platform">
   <img src="https://img.shields.io/badge/Go-1.24-00ADD8?style=flat-square&logo=go" alt="go">
   <img src="https://img.shields.io/badge/Wails-v2-red?style=flat-square" alt="wails">
-   <a href="https://linux.do"><img src="https://img.shields.io/badge/LINUX%20DO-Community-f0b752?style=flat-square" alt="LINUX
-   DO"></a>
   <img src="https://img.shields.io/badge/license-Apache%202.0-green?style=flat-square" alt="license">
 </p>
 
@@ -28,14 +26,14 @@
 
 ## Overview
 
-KiroX is a desktop application built on [Wails v2](https://wails.io) that automates batch registration of AWS Builder ID accounts. It supports three email sources — an Outlook mailbox pool, the MoeMail disposable mail service, and self-hosted Cloud-Mail — with built-in browser fingerprint emulation, concurrency control, and proxy support.
+KiroX is a Kiro registration tool built on [Wails v2](https://wails.io) and implemented entirely over HTTP/TLS protocols. It completes account registration, email verification, authorization, and Kiro token exchange directly through protocol requests. It supports an Outlook mailbox pool, MoeMail disposable mail, MailNest temporary mail, and self-hosted Cloud-Mail, with concurrency control and proxy support.
 
 ---
 
 ## Features
 
-**Registration flow**
-- Full 15-step AWS Builder ID registration automation (OIDC signup → device authorization → email verification → password setup → SSO → Kiro token exchange)
+**Kiro registration flow**
+- Full 15-step protocol-based registration flow (OIDC signup → device authorization → email verification → password setup → SSO → Kiro token exchange)
 - Liveness check on each account after registration
 - Batch mode with configurable count, concurrency, and per-task interval
 
@@ -44,11 +42,8 @@ KiroX is a desktop application built on [Wails v2](https://wails.io) that automa
 - **MoeMail disposable mail** — multi-domain configurations with auto-rotation; random / all / specific domain modes
 - **Cloud-Mail (self-hosted)** — integrates with [cloud-mail](https://github.com/jiangrungen/cloud-mail); domains can be pulled from the server automatically; random / round-robin / specific modes
 
-**Anti-detection**
-- Randomized Chrome version (120–144)
-- Randomized device fingerprints (GPU, memory, CPU cores, screen resolution)
-- WebGL extension spoofing, Canvas fingerprint generation
-- TLS fingerprint emulation via `tls-client`
+**Pure protocol and networking**
+- HTTP/TLS client and request parameter configuration via `tls-client`
 
 **Data management**
 - Successful accounts written as plain JSON to a configurable output directory
@@ -62,6 +57,19 @@ KiroX is a desktop application built on [Wails v2](https://wails.io) that automa
 **Version updates**
 - Checks the latest GitHub Release (semantic-version comparison)
 - Opens the Releases page for manual download and installation
+
+---
+
+## Roadmap
+
+KiroX is preparing for a substantial architecture refactor. Planned directions include:
+
+- **Move from desktop GUI toward WebUI**: gradually separate the frontend and backend to support browser access, server deployment, and broader usage scenarios.
+- **Built-in 2API support**: adapt AWS CodeWhisperer capabilities to standard OpenAI API and Anthropic API endpoints, making them easier to use with existing clients, workflows, and development tools.
+- **Upgrade registration tasks and account management**: unify task orchestration, account management, credential lifecycle, and runtime monitoring.
+- **Clearer service boundaries**: create room for more model adapters, proxy strategies, and automation capabilities.
+
+These directions will be delivered incrementally as development progresses. The current release remains focused on the existing Wails desktop experience.
 
 ---
 
@@ -159,7 +167,7 @@ kirox/
 ├── main.go                    # Entry; Wails initialization
 ├── app.go                     # App struct; methods bound to Wails
 ├── internal/
-│   ├── core/                  # Registration core (15-step flow)
+│   ├── core/                  # Kiro registration core
 │   │   ├── registrar.go       # Registrar struct; HTTP client
 │   │   ├── run.go             # Step orchestration
 │   │   ├── auth.go            # Steps 1–5
@@ -168,8 +176,8 @@ kirox/
 │   │   ├── kiro_auth.go       # Steps 13–14
 │   │   ├── kiro_exchange.go   # Step 15
 │   │   └── verify.go          # Liveness check
-│   ├── browser/               # Browser fingerprint emulation
-│   ├── email/                 # Email providers (Outlook / MoeMail / Cloud-Mail)
+│   ├── browser/               # Protocol request identity parameters
+│   ├── email/                 # Email providers (Outlook / MoeMail / MailNest / Cloud-Mail)
 │   ├── crypto/                # JWE encryption; XXTEA
 │   ├── storage/               # Account storage; config persistence
 │   ├── task/                  # Batch scheduling; concurrency
@@ -196,6 +204,8 @@ kirox/
 | HTTP client | [bogdanfinn/tls-client](https://github.com/bogdanfinn/tls-client) |
 | Frontend | Vanilla HTML / CSS / JavaScript |
 | Crypto | RSA-OAEP-256 + AES-256-GCM (JWE) |
+
+The current release is still a Wails desktop application; the architecture may move toward WebUI in a future refactor.
 
 ---
 

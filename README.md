@@ -1,11 +1,11 @@
 <p align="center">
-  <img src="frontend/assets/appicon.svg" width="100" height="100" alt="KiroX">
+  <img src="frontend/assets/appicon.png" width="100" height="100" alt="KiroX">
 </p>
 
 <h1 align="center">KiroX</h1>
 
 <p align="center">
-  AWS Builder ID (Kiro) 批量自动注册工具
+  Kiro 注册机
 </p>
 
 <p align="center">
@@ -19,8 +19,6 @@
   <img src="https://img.shields.io/badge/platform-Windows%20%7C%20macOS%20%7C%20Linux-0078d4?style=flat-square" alt="platform">
   <img src="https://img.shields.io/badge/Go-1.24-00ADD8?style=flat-square&logo=go" alt="go">
   <img src="https://img.shields.io/badge/Wails-v2-red?style=flat-square" alt="wails">
-   <a href="https://linux.do"><img src="https://img.shields.io/badge/LINUX%20DO-社区-f0b752?style=flat-square" alt="LINUX
-   DO"></a>
   <img src="https://img.shields.io/badge/license-Apache%202.0-green?style=flat-square" alt="license">
 </p>
 
@@ -28,14 +26,14 @@
 
 ## 简介
 
-KiroX 是一款基于 [Wails v2](https://wails.io) 构建的桌面应用，用于自动化完成 AWS Builder ID 账号的批量注册流程。支持 Outlook 邮箱池、MoeMail 临时邮箱、MailNest 临时邮箱以及自部署的 Cloud-Mail 四种邮件来源，内置浏览器指纹模拟、并发控制和代理支持。
+KiroX 是一款基于 [Wails v2](https://wails.io) 构建的 Kiro 注册机，采用纯 HTTP/TLS 协议实现。通过协议完成账号注册、邮箱验证、授权和 Kiro Token 交换。项目支持 Outlook 邮箱池、MoeMail 临时邮箱、MailNest 临时邮箱以及自部署的 Cloud-Mail，并提供并发控制和代理支持。
 
 ---
 
 ## 功能特性
 
-**注册流程**
-- 完整的 15 步 AWS Builder ID 注册自动化（OIDC 注册 → 设备授权 → 邮箱验证 → 密码设置 → SSO → Kiro Token 交换）
+**Kiro 注册流程**
+- 完整的 15 步协议注册流程（OIDC 注册 → 设备授权 → 邮箱验证 → 密码设置 → SSO → Kiro Token 交换）
 - 注册完成后自动验证账号存活状态
 - 支持批量注册，可配置数量、并发数和任务间隔
 
@@ -45,11 +43,8 @@ KiroX 是一款基于 [Wails v2](https://wails.io) 构建的桌面应用，用�
 - **Cloud-Mail 自部署邮箱**：对接 [cloud-mail](https://github.com/jiangrungen/cloud-mail) 服务，域名可自动从服务器拉取，支持随机/轮询/指定模式
 - **MailNest-迈巢**：对接 [MailNest-迈巢](https://mailnest.top/) 服务，使用 Outlook 临时邮箱
 
-**反检测**
-- 随机化 Chrome 版本（120–144）
-- 随机化设备指纹（GPU、内存、CPU 核数、屏幕分辨率）
-- WebGL 扩展伪造、Canvas 指纹生成
-- 基于 `tls-client` 的 TLS 指纹模拟
+**纯协议与网络**
+- 基于 `tls-client` 的 HTTP/TLS 客户端与请求参数配置
 
 **数据管理**
 - 注册成功的账号以明文 JSON 写入可配置的输出目录
@@ -86,7 +81,7 @@ go install github.com/wailsapp/wails/v2/cmd/wails@latest
 
 # 克隆仓库
 git clone https://github.com/huey1in/kirox.git
-cd kiro_reg
+cd kirox
 
 # 开发模式（热重载）
 wails dev
@@ -95,7 +90,7 @@ wails dev
 wails build
 ```
 
-构建产物位于 `build/bin/kiro-reg.exe`。
+构建产物位于 `build/bin/`。
 
 ---
 
@@ -164,7 +159,7 @@ kirox/
 ├── main.go                    # 入口，Wails 初始化
 ├── app.go                     # App 结构体，Wails 绑定方法
 ├── internal/
-│   ├── core/                  # 注册核心逻辑（15 步流程）
+│   ├── core/                  # Kiro 注册核心逻辑
 │   │   ├── registrar.go       # Registrar 结构体，HTTP 客户端
 │   │   ├── run.go             # 步骤编排
 │   │   ├── auth.go            # 步骤 1–5
@@ -173,8 +168,8 @@ kirox/
 │   │   ├── kiro_auth.go       # 步骤 13–14
 │   │   ├── kiro_exchange.go   # 步骤 15
 │   │   └── verify.go          # 账号验证
-│   ├── browser/               # 浏览器指纹模拟
-│   ├── email/                 # 邮箱服务（Outlook / MoeMail）
+│   ├── browser/               # 协议请求身份参数生成
+│   ├── email/                 # 邮箱服务（Outlook / MoeMail / MailNest / Cloud-Mail）
 │   ├── crypto/                # JWE 加密、XXTEA
 │   ├── storage/               # 账号存储、配置持久化
 │   ├── task/                  # 批量任务调度、并发控制
@@ -201,6 +196,21 @@ kirox/
 | HTTP 客户端 | [bogdanfinn/tls-client](https://github.com/bogdanfinn/tls-client) |
 | 前端 | 原生 HTML / CSS / JavaScript |
 | 加密 | RSA-OAEP-256 + AES-256-GCM (JWE) |
+
+当前版本仍以 Wails 桌面端为主，后续重构可能转向 WebUI 架构。
+
+---
+
+## 后续规划
+
+KiroX 正准备进行一次较大规模的架构重构，后续方向包括：
+
+- **从桌面 GUI 走向 WebUI**：逐步拆分前后端，支持浏览器访问、服务端部署和更多使用场景。
+- **内置 2API 能力**：计划将 AWS CodeWhisperer 能力适配为标准 OpenAI API 与 Anthropic API 端点，方便接入现有客户端、工作流和开发工具。
+- **注册任务与账号管理升级**：统一任务编排、账号管理、凭证生命周期和运行监控。
+- **更清晰的服务化边界**：为后续扩展更多模型适配、代理策略和自动化能力做准备。
+
+以上方向会根据实际开发进度逐步落地，当前版本仍以现有桌面端体验为主。
 
 ---
 
