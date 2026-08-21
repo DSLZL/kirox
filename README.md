@@ -2,11 +2,7 @@
   <img src="frontend/assets/appicon.png" width="100" height="100" alt="KiroX">
 </p>
 
-<h1 align="center">KiroX</h1>
-
-<p align="center">
-  Kiro 注册机
-</p>
+<h1 align="center">KiroX | kiro协议注册机</h1>
 
 <p align="center">
   <a href="README.md">简体中文</a> ·
