@@ -257,7 +257,6 @@ xattr -cr /path/to/KiroX.app
 ## コミュニティ
 
 - QQ グループ：[参加する](https://qm.qq.com/q/RXMTXUlc4w)
-- Telegram グループ：[@kiroXaitg](https://t.me/kiroXaitg)
 
 ---
 
