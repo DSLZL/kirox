@@ -257,7 +257,6 @@ Replace `/path/to/KiroX.app` with the real path (you can drag `KiroX.app` into t
 ## Community
 
 - QQ group: [join](https://qm.qq.com/q/RXMTXUlc4w)
-- Telegram group: [@kiroXaitg](https://t.me/kiroXaitg)
 
 ---
 
