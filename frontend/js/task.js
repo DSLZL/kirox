@@ -34,11 +34,6 @@ function formatTime(seconds) {
   return h + 'h ' + m + 'm';
 }
 
-// 任务模态框（保留兼容，已迁移到注册页面）
-function openKiroTaskModal() { switchPage('register'); }
-function closeKiroTaskModal() {}
-
-var updateInfo = null;
 var _prevRunning = false;
 window._kiroLogs = [];
 
@@ -240,16 +235,6 @@ async function stopTask() {
 
 // ===== 更新系统 =====
 
-if (window.runtime) {
-  window.runtime.EventsOn('update-available', function(data) {
-    updateInfo = data;
-    showUpdateModal(data);
-  });
-  window.runtime.EventsOn('update-progress', function(progress, downloaded, total) {
-    updateDownloadProgress(progress, downloaded, total);
-  });
-}
-
 function showUpdateModal(data) {
   document.getElementById('update-current-version').textContent = data.currentVersion || '-';
   document.getElementById('update-latest-version').textContent = data.latestVersion || data.version || '-';
@@ -283,7 +268,6 @@ async function checkUpdateManually() {
       return;
     }
     if (result.hasUpdate) {
-      updateInfo = result;
       showUpdateModal(result);
     } else {
       showToast(_tkT('toast.upToDate', '当前已是最新版本'));
@@ -295,7 +279,6 @@ async function checkUpdateManually() {
 
 // ===== 状态轮询 =====
 
-var lastOutlookUpdate = 0;
 setInterval(async function() {
   try {
     var s = await window.go.main.App.GetStatus();
@@ -355,14 +338,6 @@ setInterval(async function() {
     renderUnifiedLogs();
   } catch(e) {}
 
-  var now = Date.now();
-  if (now - lastOutlookUpdate > 2000) {
-    lastOutlookUpdate = now;
-    var outlookModal = document.getElementById('outlook-modal');
-    if (outlookModal && outlookModal.classList.contains('show')) {
-      await loadOutlookAccountsList();
-    }
-  }
 }, 2000);
 
 // 切换语言时立刻按新语言重渲染日志（renderUnifiedLogs 自带 innerHTML 短路，无副作用）

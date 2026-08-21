@@ -11,7 +11,6 @@ import (
 	"net"
 	"net/http"
 	"net/url"
-	"os"
 	"regexp"
 	"strings"
 	"time"
@@ -26,30 +25,6 @@ type OutlookAccount struct {
 	ClientID     string
 	RefreshToken string
 	Mode         string
-}
-
-// ParseOutlookCSV 解析 outlook.csv
-func ParseOutlookCSV(path string) ([]OutlookAccount, error) {
-	data, err := os.ReadFile(path)
-	if err != nil {
-		return nil, err
-	}
-
-	var accounts []OutlookAccount
-	lines := strings.Split(strings.TrimSpace(string(data)), "\n")
-	for _, line := range lines {
-		line = strings.TrimSpace(line)
-		if line == "" {
-			continue
-		}
-		acc, ok := parseOutlookAccountLine(line)
-		if !ok {
-			log.Printf("跳过格式错误的行: %s", line[:min(50, len(line))])
-			continue
-		}
-		accounts = append(accounts, acc)
-	}
-	return accounts, nil
 }
 
 // ParseOutlookLines 从文本内容直接解析 Outlook 账号 (Web UI 使用)

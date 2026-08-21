@@ -40,44 +40,6 @@ function switchPage(pageId) {
   }
 }
 
-// 标签页切换
-function switchTab(tabId) {
-  var tabBar = document.querySelector('.tab-item[data-tab="' + tabId + '"]').parentElement;
-  tabBar.querySelectorAll('.tab-item').forEach(function(t) {
-    t.classList.toggle('active', t.getAttribute('data-tab') === tabId);
-  });
-  var page = tabBar.parentElement;
-  page.querySelectorAll('.tab-panel').forEach(function(p) {
-    p.classList.remove('active');
-  });
-  var target = document.getElementById('tab-' + tabId);
-  if (target) target.classList.add('active');
-}
-
-// 下拉框
-function toggleDropdown(id) {
-  var dropdown = document.getElementById(id);
-  var selected = dropdown.querySelector('.dropdown-selected');
-  var options = dropdown.querySelector('.dropdown-options');
-  document.querySelectorAll('.dropdown-options.show').forEach(function(el) {
-    if (el !== options) {
-      el.classList.remove('show');
-      el.parentElement.querySelector('.dropdown-selected').classList.remove('active');
-    }
-  });
-  selected.classList.toggle('active');
-  options.classList.toggle('show');
-}
-
-document.addEventListener('click', function(e) {
-  if (!e.target.closest('.custom-dropdown')) {
-    document.querySelectorAll('.dropdown-options.show').forEach(function(el) {
-      el.classList.remove('show');
-      el.parentElement.querySelector('.dropdown-selected').classList.remove('active');
-    });
-  }
-});
-
 async function loadInfoVersion() {
   try {
     var data = await window.go.main.App.GetOverview();
@@ -494,17 +456,6 @@ window.addEventListener('DOMContentLoaded', async function() {
   setTimeout(checkUpdateOnStartup, 2000);
 });
 
-// 语言切换（设置页下拉）
-async function onLanguageChange(lang) {
-  if (!lang || !window.I18N) return;
-  try {
-    window.I18N.setLanguage(lang);
-    showToast(tr('toast.languageChanged', '已切换语言'));
-  } catch(e) {
-    showToast(tr('toast.operationFailed', '操作失败') + ': ' + e.message, 'error');
-  }
-}
-
 // 语言循环切换（侧栏点击）：zh → en → ja → zh
 var _langOrder = ['zh', 'en', 'ja'];
 var _langLabel = { zh: '中', en: 'EN', ja: 'あ' };
@@ -540,28 +491,6 @@ async function checkUpdateOnStartup() {
       if (typeof showUpdateModal === 'function') showUpdateModal(result);
     }
   } catch(e) {}
-}
-
-// 侧边栏信息按钮：10次点击触发调试弹窗
-var _infoClickCount = 0;
-var _infoClickTimer = null;
-function onNavInfoClick() {
-  switchPage('info');
-  _infoClickCount++;
-  clearTimeout(_infoClickTimer);
-  _infoClickTimer = setTimeout(function() { _infoClickCount = 0; }, 2000);
-  if (_infoClickCount >= 10) {
-    _infoClickCount = 0;
-    if (typeof showUpdateModal === 'function') {
-      showUpdateModal({
-        currentVersion: 'v1.0.1',
-        latestVersion: 'v99.0.0',
-        releaseDate: new Date().toISOString().slice(0, 10),
-        changelog: '## 调试模式\n- 这是一条测试更新弹窗\n- 触发方式：点击信息按钮 10 次',
-        hasUpdate: true
-      });
-    }
-  }
 }
 
 function renderChangelog(md) {
@@ -604,4 +533,3 @@ function renderChangelog(md) {
   if (inList) html += '</ul>';
   return html;
 }
-

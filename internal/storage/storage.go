@@ -471,34 +471,6 @@ func SaveJSON(filePath string, items []map[string]interface{}) error {
 	return saveJSON(filePath, items)
 }
 
-// AppendJSON 向 JSON 数组文件追加一条记录（线程安全）
-func AppendJSON(filePath string, item map[string]interface{}) error {
-	mu := getFileMutex(filePath)
-	mu.Lock()
-	defer mu.Unlock()
-	existing, _ := loadJSON(filePath)
-	existing = append(existing, item)
-	return saveJSON(filePath, existing)
-}
-
-// ModifyJSON 原子读-改-写
-func ModifyJSON(filePath string, fn func([]map[string]interface{}) []map[string]interface{}) error {
-	mu := getFileMutex(filePath)
-	mu.Lock()
-	defer mu.Unlock()
-	existing, _ := loadJSON(filePath)
-	return saveJSON(filePath, fn(existing))
-}
-
-// CountJSON 统计 JSON 数组文件中的记录数
-func CountJSON(filePath string) int {
-	items, err := LoadJSON(filePath)
-	if err != nil {
-		return 0
-	}
-	return len(items)
-}
-
 func loadJSON(filePath string) ([]map[string]interface{}, error) {
 	data, err := os.ReadFile(filePath)
 	if err != nil {

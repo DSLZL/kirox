@@ -26,8 +26,8 @@ type MoeMailClient struct {
 
 // MoeMailSystemConfig 系统配置响应
 type MoeMailSystemConfig struct {
-	EmailDomains string `json:"emailDomains"` // 可用域名（逗号分隔字符串）
-	Domains      []string                      // 解析后的域名列表（不参与 JSON）
+	EmailDomains string   `json:"emailDomains"` // 可用域名（逗号分隔字符串）
+	Domains      []string // 解析后的域名列表（不参与 JSON）
 }
 
 // MoeMailEmail 邮箱信息
@@ -179,12 +179,6 @@ func (c *MoeMailClient) GetMessages(emailID, cursor string) (*MoeMailMessagesRes
 	}
 
 	return &result, nil
-}
-
-// TestConnection 测试连接（通过获取系统配置验证）
-func (c *MoeMailClient) TestConnection() error {
-	_, err := c.GetSystemConfig()
-	return err
 }
 
 // MoeMailProvider 实现 EmailProvider 接口

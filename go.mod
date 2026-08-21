@@ -8,12 +8,11 @@ require (
 	github.com/bogdanfinn/fhttp v0.6.8
 	github.com/bogdanfinn/tls-client v1.14.0
 	github.com/google/uuid v1.6.0
-	github.com/wailsapp/wails/v2 v2.12.0
+	github.com/wailsapp/wails/v2 v2.11.0
 	golang.org/x/net v0.48.0
 )
 
 require (
-	git.sr.ht/~jackmordaunt/go-toast/v2 v2.0.3 // indirect
 	github.com/andybalholm/brotli v1.2.0 // indirect
 	github.com/bdandy/go-errors v1.2.2 // indirect
 	github.com/bdandy/go-socks4 v1.2.3 // indirect

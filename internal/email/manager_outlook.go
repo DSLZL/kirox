@@ -7,24 +7,6 @@ import (
 	"reg_go/internal/storage"
 )
 
-// ParseOutlook 解析 Outlook 账号
-func ParseOutlook(data string) map[string]interface{} {
-	accounts := ParseOutlookLines(data)
-
-	var accountList []map[string]string
-	for _, acc := range accounts {
-		accountList = append(accountList, map[string]string{
-			"email":    acc.Email,
-			"password": acc.Password,
-		})
-	}
-
-	return map[string]interface{}{
-		"count":    len(accounts),
-		"accounts": accountList,
-	}
-}
-
 // AddOutlookAccounts 添加 Outlook 账号到持久化存储
 func AddOutlookAccounts(data string) map[string]interface{} {
 	accounts := ParseOutlookLines(data)

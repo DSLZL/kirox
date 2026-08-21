@@ -75,10 +75,6 @@ function updateMoeMailUI() {
     }
   });
 
-  // 更新模态框计数
-  const modalCount = document.getElementById('moemail-count');
-  if (modalCount) modalCount.textContent = _mmT('moemail.configCount', { n: moemailConfigs.length }, '{n} 个');
-
   // 更新设置页摘要
   const summaryEl = document.getElementById('settings-moemail-summary');
   if (summaryEl) {
@@ -89,42 +85,11 @@ function updateMoeMailUI() {
     }
   }
 
-  // 更新配置列表
   renderMoeMailConfigList();
 }
 
-// 渲染配置列表（模态框 + 设置页内联）
+// 渲染设置页内联配置列表
 function renderMoeMailConfigList() {
-  // 模态框表格
-  const tbody = document.getElementById('moemail-config-body');
-  if (tbody) {
-    if (moemailConfigs.length === 0) {
-      tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:var(--text-muted);padding:24px;">' + _mmT('moemail.emptyConfigs', '暂无配置') + '</td></tr>';
-    } else {
-      tbody.innerHTML = moemailConfigs.map((cfg, idx) => {
-        const status = moemailConfigStatus[cfg.name] || { tested: false };
-        let statusHtml = '';
-        if (!status.tested) {
-          statusHtml = '<span style="color:var(--text-muted);font-weight:600;font-size:12px;">' + _mmT('status.untested', '未测试') + '</span>';
-        } else if (status.success) {
-          statusHtml = '<span style="color:var(--success);font-weight:600;font-size:12px;">' + _mmT('status.available', '可用') + '</span>';
-        } else {
-          statusHtml = '<span style="color:var(--danger);font-weight:600;font-size:12px;">' + _mmT('status.unavailable', '不可用') + '</span>';
-        }
-        return `<tr>
-          <td>${idx + 1}</td>
-          <td>${escapeHtml(cfg.name)}</td>
-          <td style="font-family:var(--font-mono);font-size:11px;color:var(--text-muted);">${escapeHtml(cfg.url)}</td>
-          <td>${statusHtml}</td>
-          <td style="text-align:right;white-space:nowrap;">
-            <a href="javascript:void(0)" onclick="testMoeMailConfigByIndex(${idx})" style="color:var(--primary);margin-right:12px;font-size:12px;">${_mmT('common.test', '测试')}</a>
-            <a href="javascript:void(0)" onclick="deleteMoeMailConfig(${idx})" style="color:var(--danger);font-size:12px;">${_mmT('common.delete', '删除')}</a>
-          </td>
-        </tr>`;
-      }).join('');
-    }
-  }
-
   // 设置页内联列表
   const inlineList = document.getElementById('moemail-inline-list');
   if (inlineList) {
@@ -299,166 +264,6 @@ async function inlineTestMoeMail() {
   btn.disabled = false; btn.innerHTML = btnOriginalHTML;
 }
 
-// 打开 MoeMail 模态框
-function openMoeMailModal() {
-  loadMoeMailConfigs();
-  document.getElementById('moemail-modal').classList.add('show');
-  // 清空输入框
-  document.getElementById('moemail-name').value = '';
-  document.getElementById('moemail-url').value = 'https://moemail.app';
-  document.getElementById('moemail-apikey').value = '';
-  document.getElementById('moemail-test-result').style.display = 'none';
-}
-
-// 关闭 MoeMail 模态框
-function closeMoeMailModal() {
-  document.getElementById('moemail-modal').classList.remove('show');
-}
-
-// 测试连接
-async function testMoeMailConnection() {
-  const name = document.getElementById('moemail-name').value.trim();
-  const url = document.getElementById('moemail-url').value.trim();
-  const apiKey = document.getElementById('moemail-apikey').value.trim();
-  const resultDiv = document.getElementById('moemail-test-result');
-
-  if (!url || !apiKey) {
-    resultDiv.style.display = 'block';
-    resultDiv.style.color = 'var(--danger)';
-    resultDiv.textContent = _mmT('moemail.requiredUrlKey2', '请填写 URL 和 API Key');
-    return;
-  }
-
-  resultDiv.style.display = 'block';
-  resultDiv.style.color = 'var(--text-muted)';
-  resultDiv.textContent = _mmT('moemail.testing', '测试中...');
-
-  try {
-    const config = { name: name || _mmT('common.test', '测试'), url, apiKey };
-    const result = await window.go.main.App.TestMoeMailConnection(JSON.stringify(config));
-
-    if (result.error) {
-      resultDiv.style.color = 'var(--danger)';
-      let errorMsg = result.error;
-      if (errorMsg.includes('403')) {
-        errorMsg = _mmT('moemail.err403', 'API Key 权限不足，请检查账号权限或购买 API 调用额度');
-      } else if (errorMsg.includes('401')) {
-        errorMsg = _mmT('moemail.err401', 'API Key 无效，请检查是否正确');
-      } else if (errorMsg.includes('404')) {
-        errorMsg = _mmT('moemail.err404', 'API 地址错误，请检查 URL 是否正确');
-      } else if (errorMsg.includes('timeout') || errorMsg.includes('连接')) {
-        errorMsg = _mmT('moemail.errTimeout', '连接超时，请检查网络或 URL 是否正确');
-      }
-      resultDiv.textContent = errorMsg;
-    } else {
-      resultDiv.style.color = 'var(--success)';
-      const domains = result.domains || [];
-      if (domains.length > 0) {
-        resultDiv.textContent = _mmT('moemail.connectedOkDomains', { d: domains.join(', ') }, '连接成功！可用域名: {d}');
-      } else {
-        resultDiv.textContent = _mmT('moemail.connectedOk', '连接成功！');
-      }
-    }
-  } catch (e) {
-    resultDiv.style.color = 'var(--danger)';
-    resultDiv.textContent = _mmT('moemail.testFailedShort', '测试失败') + ': ' + e;
-  }
-}
-
-// 添加配置
-async function addMoeMailConfig() {
-  const name = document.getElementById('moemail-name').value.trim();
-  const url = document.getElementById('moemail-url').value.trim();
-  const apiKey = document.getElementById('moemail-apikey').value.trim();
-  const resultDiv = document.getElementById('moemail-test-result');
-
-  if (!name) {
-    resultDiv.style.display = 'block';
-    resultDiv.style.color = 'var(--danger)';
-    resultDiv.textContent = _mmT('moemail.requiredName', '请填写配置名称');
-    return;
-  }
-
-  if (!url || !apiKey) {
-    resultDiv.style.display = 'block';
-    resultDiv.style.color = 'var(--danger)';
-    resultDiv.textContent = _mmT('moemail.requiredUrlKey2', '请填写 URL 和 API Key');
-    return;
-  }
-
-  if (moemailConfigs.some(cfg => cfg.name === name)) {
-    resultDiv.style.display = 'block';
-    resultDiv.style.color = 'var(--danger)';
-    resultDiv.textContent = _mmT('moemail.nameExists', '配置名称已存在');
-    return;
-  }
-
-  resultDiv.style.display = 'block';
-  resultDiv.style.color = 'var(--text-muted)';
-  resultDiv.textContent = _mmT('moemail.testingConnection', '正在测试连接...');
-
-  const newConfig = { name, url, apiKey };
-
-  try {
-    const testResult = await window.go.main.App.TestMoeMailConnection(JSON.stringify(newConfig));
-
-    if (testResult.error) {
-      resultDiv.style.color = 'var(--danger)';
-      let errorMsg = testResult.error;
-      if (errorMsg.includes('403')) {
-        errorMsg = _mmT('moemail.err403', 'API Key 权限不足，请检查账号权限或购买 API 调用额度');
-      } else if (errorMsg.includes('401')) {
-        errorMsg = _mmT('moemail.err401', 'API Key 无效，请检查是否正确');
-      } else if (errorMsg.includes('404')) {
-        errorMsg = _mmT('moemail.err404', 'API 地址错误，请检查 URL 是否正确');
-      } else if (errorMsg.includes('timeout') || errorMsg.includes('连接')) {
-        errorMsg = _mmT('moemail.errTimeout', '连接超时，请检查网络或 URL 是否正确');
-      }
-      resultDiv.textContent = _mmT('moemail.testFailedAddDeny', { err: errorMsg }, '测试失败: {err}，无法添加配置');
-      return;
-    }
-
-    moemailConfigs.push(newConfig);
-
-    const result = await window.go.main.App.SaveMoeMailConfigs(JSON.stringify(moemailConfigs));
-    if (result.error) {
-      moemailConfigs.pop();
-      resultDiv.style.color = 'var(--danger)';
-      resultDiv.textContent = _mmT('toast.operationFailed', '保存失败') + ': ' + result.error;
-      return;
-    }
-
-    const domains = testResult.domains || [];
-    moemailConfigStatus[name] = {
-      tested: true,
-      success: true,
-      domains: domains,
-      domainCount: domains.length
-    };
-    saveMoeMailConfigStatus();
-
-    document.getElementById('moemail-name').value = '';
-    document.getElementById('moemail-url').value = 'https://moemail.app';
-    document.getElementById('moemail-apikey').value = '';
-
-    resultDiv.style.color = 'var(--success)';
-    if (domains.length > 0) {
-      resultDiv.textContent = _mmT('moemail.addedDomains', { n: domains.length }, '添加成功，可用域名 {n} 个');
-    } else {
-      resultDiv.textContent = _mmT('moemail.addedOk', '添加成功');
-    }
-
-    updateMoeMailUI();
-
-    setTimeout(() => {
-      resultDiv.style.display = 'none';
-    }, 2000);
-  } catch (e) {
-    resultDiv.style.color = 'var(--danger)';
-    resultDiv.textContent = _mmT('moemail.testFailedAddDeny', { err: e }, '测试失败: {err}，无法添加配置');
-  }
-}
-
 // 测试指定配置
 async function testMoeMailConfigByIndex(index) {
   if (index < 0 || index >= moemailConfigs.length) return;
@@ -534,38 +339,6 @@ async function deleteMoeMailConfig(index) {
         showToast(_mmT('toast.deleteOk', '删除成功'), 'success');
       } catch (e) {
         showToast(_mmT('toast.deleteFailed', '删除失败') + ': ' + e, 'error');
-        await loadMoeMailConfigs();
-      }
-    }
-  );
-}
-
-// 清空所有配置
-async function clearAllMoeMailConfigs() {
-  if (moemailConfigs.length === 0) {
-    showToast(_mmT('moemail.nothingToClear', '没有配置可清空'), 'info');
-    return;
-  }
-
-  showConfirmModal(
-    _mmT('moemail.clearAllTitle', '清空 MoeMail 配置'),
-    _mmT('moemail.clearAllMsg', '确认清空所有 MoeMail 配置吗？此操作不可恢复。'),
-    _mmT('accounts.clearAllConfirm', '确认清空'),
-    async function() {
-      moemailConfigs = [];
-
-      try {
-        const result = await window.go.main.App.SaveMoeMailConfigs(JSON.stringify(moemailConfigs));
-        if (result.error) {
-          showToast(_mmT('toast.clearFailed', '清空失败') + ': ' + result.error, 'error');
-          await loadMoeMailConfigs();
-          return;
-        }
-
-        updateMoeMailUI();
-        showToast(_mmT('moemail.allCleared', '已清空所有配置'), 'success');
-      } catch (e) {
-        showToast(_mmT('toast.clearFailed', '清空失败') + ': ' + e, 'error');
         await loadMoeMailConfigs();
       }
     }

@@ -28,7 +28,7 @@
 
 ## 简介
 
-KiroX 是一款基于 [Wails v2](https://wails.io) 构建的桌面应用，用于自动化完成 AWS Builder ID 账号的批量注册流程。支持 Outlook 邮箱池、MoeMail 临时邮箱、MailNest 临时邮箱以及自部署的 Cloud-Mail 四种邮件来源，内置浏览器指纹模拟、并发控制、代理支持和自动更新。
+KiroX 是一款基于 [Wails v2](https://wails.io) 构建的桌面应用，用于自动化完成 AWS Builder ID 账号的批量注册流程。支持 Outlook 邮箱池、MoeMail 临时邮箱、MailNest 临时邮箱以及自部署的 Cloud-Mail 四种邮件来源，内置浏览器指纹模拟、并发控制和代理支持。
 
 ---
 
@@ -60,10 +60,9 @@ KiroX 是一款基于 [Wails v2](https://wails.io) 构建的桌面应用，用�
 - 全局代理配置，支持 HTTP / HTTPS / SOCKS5
 - 支持 `协议://用户:密码@host:port` 或简写 `host:port:user:pass` 格式
 
-**自动更新**
+**版本更新**
 - 检查 GitHub Releases 最新版本（语义化版本比较）
-- 下载时 SHA256 完整性校验 + PE 头验证
-- Windows 批处理脚本实现进程退出后无感替换并重启
+- 通过 Releases 页面手动下载并安装新版本
 
 ---
 
@@ -182,7 +181,7 @@ kirox/
 │   ├── data/                  # 注册结果读写
 │   ├── proxy/                 # 代理出口 IP / 归属检测
 │   ├── subscription/          # 订阅链接：刷 Token + listAvailableSubscriptions / CreateSubscriptionToken / setUserPreference
-│   ├── updater/               # 自动更新
+│   ├── updater/               # 版本检查
 │   └── http/                  # TLS 客户端工具
 └── frontend/
     ├── index.html             # 单页应用入口

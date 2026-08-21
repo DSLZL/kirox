@@ -283,9 +283,6 @@
 }
 
 /* MoeMail 网格（3列布局） */
-.db-detail-card:has(#ov-moemail-count) .db-outlook-grid {
-  grid-template-columns: repeat(3, 1fr);
-}
 
 .db-outlook-item {
   text-align: center;

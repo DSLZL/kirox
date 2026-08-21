@@ -5,15 +5,14 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+
 	"reg_go/internal/storage"
 )
 
-// getMailNestConfigPath 获取 MailNest 配置文件路径
 func getMailNestConfigPath() string {
 	return filepath.Join(storage.GetDataDir(), "mailnest.dat")
 }
 
-// TestMailNestConnection 测试 MailNest 连接
 func TestMailNestConnection(configJSON string) map[string]interface{} {
 	var config MailNestConfig
 	if err := json.Unmarshal([]byte(configJSON), &config); err != nil {
@@ -21,28 +20,29 @@ func TestMailNestConnection(configJSON string) map[string]interface{} {
 	}
 
 	client := NewMailNestClient(config)
-	Balance, err := client.GetBalance()
+	balance, err := client.GetBalance()
 	if err != nil {
 		return map[string]interface{}{"error": "连接失败: " + err.Error()}
 	}
 
 	return map[string]interface{}{
 		"success": true,
-		"balance": Balance.Balance,
+		"balance": balance.Balance,
 	}
 }
 
-// SaveMailNestConfig 保存配置到本地
 func SaveMailNestConfig(jsonData string) map[string]interface{} {
-	os.MkdirAll(filepath.Dir(getMailNestConfigPath()), 0755)
-	if err := os.WriteFile(getMailNestConfigPath(), []byte(jsonData), 0600); err != nil {
+	path := getMailNestConfigPath()
+	if err := os.MkdirAll(filepath.Dir(path), 0755); err != nil {
 		return map[string]interface{}{"error": "保存失败: " + err.Error()}
 	}
-	log.Printf("[<MailNest>] 已保存 配置" + jsonData)
+	if err := os.WriteFile(path, []byte(jsonData), 0600); err != nil {
+		return map[string]interface{}{"error": "保存失败: " + err.Error()}
+	}
+	log.Printf("[MailNest] config saved")
 	return map[string]interface{}{"success": true}
 }
 
-// GetMailNestConfig 获取 MailNest 配置列表
 func GetMailNestConfig() MailNestConfig {
 	data, err := os.ReadFile(getMailNestConfigPath())
 	if err != nil {
@@ -50,8 +50,8 @@ func GetMailNestConfig() MailNestConfig {
 	}
 	var config MailNestConfig
 	if err := json.Unmarshal(data, &config); err != nil {
-		log.Printf("[MailNest] 配置文件格式无效，已重置: %v", err)
-		os.Remove(getMoeMailConfigPath())
+		log.Printf("[MailNest] invalid config file, resetting: %v", err)
+		_ = os.Remove(getMailNestConfigPath())
 		return MailNestConfig{}
 	}
 	return config

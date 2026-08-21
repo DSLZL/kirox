@@ -28,7 +28,7 @@
 
 ## 概要
 
-KiroX は [Wails v2](https://wails.io) ベースのデスクトップアプリで、AWS Builder ID アカウントの一括登録を自動化します。Outlook メールボックスプール、MoeMail 使い捨てメール、セルフホスト型 Cloud-Mail の 3 種類のメールソースに対応し、ブラウザフィンガープリント偽装・並列制御・プロキシ・自動更新を内蔵しています。
+KiroX は [Wails v2](https://wails.io) ベースのデスクトップアプリで、AWS Builder ID アカウントの一括登録を自動化します。Outlook メールボックスプール、MoeMail 使い捨てメール、セルフホスト型 Cloud-Mail の 3 種類のメールソースに対応し、ブラウザフィンガープリント偽装・並列制御・プロキシを内蔵しています。
 
 ---
 
@@ -59,10 +59,9 @@ KiroX は [Wails v2](https://wails.io) ベースのデスクトップアプリ�
 - グローバルプロキシ（HTTP / HTTPS / SOCKS5 対応）
 - `scheme://user:pass@host:port` 形式と略式 `host:port:user:pass` の両方に対応
 
-**自動更新**
-- GitHub Releases の最新バージョンを取得（セマンティックバージョン比較）
-- ダウンロード時に SHA256 整合性検証 + PE ヘッダ検証
-- Windows バッチスクリプトでプロセス終了後の差し替えと再起動を実行
+**バージョン更新**
+- GitHub Releases の最新バージョンを確認（セマンティックバージョン比較）
+- Releases ページを開き、手動でダウンロードとインストールを行う
 
 ---
 
@@ -177,7 +176,7 @@ kirox/
 │   ├── data/                  # 結果 I/O
 │   ├── proxy/                 # 出口 IP / 地域検出
 │   ├── subscription/          # サブスクリプションリンク：トークン更新 + listAvailableSubscriptions / CreateSubscriptionToken / setUserPreference
-│   ├── updater/               # 自動更新
+│   ├── updater/               # バージョン確認
 │   └── http/                  # TLS クライアントヘルパ
 └── frontend/
     ├── index.html             # シングルページエントリ

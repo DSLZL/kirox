@@ -477,9 +477,6 @@ html, body {
     grid-template-columns: repeat(2, 1fr);
   }
   /* MoeMail 在小屏幕上保持 2 列 */
-  .db-detail-card:has(#ov-moemail-count) .db-outlook-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
 }
 
 @media (max-width: 768px) {

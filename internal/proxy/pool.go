@@ -227,16 +227,3 @@ func PickRandom() string {
 	}
 	return candidates[len(candidates)-1].url
 }
-
-// HasEnabled 是否至少一个启用的池条目
-func HasEnabled() bool {
-	poolMu.Lock()
-	defer poolMu.Unlock()
-	loadPoolLocked()
-	for _, e := range poolEntries {
-		if e.Enabled && e.URL != "" {
-			return true
-		}
-	}
-	return false
-}

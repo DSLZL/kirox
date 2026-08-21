@@ -28,7 +28,7 @@
 
 ## Overview
 
-KiroX is a desktop application built on [Wails v2](https://wails.io) that automates batch registration of AWS Builder ID accounts. It supports three email sources — an Outlook mailbox pool, the MoeMail disposable mail service, and self-hosted Cloud-Mail — with built-in browser fingerprint emulation, concurrency control, proxy support, and auto-update.
+KiroX is a desktop application built on [Wails v2](https://wails.io) that automates batch registration of AWS Builder ID accounts. It supports three email sources — an Outlook mailbox pool, the MoeMail disposable mail service, and self-hosted Cloud-Mail — with built-in browser fingerprint emulation, concurrency control, and proxy support.
 
 ---
 
@@ -59,10 +59,9 @@ KiroX is a desktop application built on [Wails v2](https://wails.io) that automa
 - Global proxy supporting HTTP / HTTPS / SOCKS5
 - Accepts both `scheme://user:pass@host:port` and the shorthand `host:port:user:pass`
 
-**Auto-update**
-- Polls the latest GitHub Release (semantic-version comparison)
-- SHA256 integrity check + PE header validation on download
-- Windows batch script performs the binary swap and restart after the process exits
+**Version updates**
+- Checks the latest GitHub Release (semantic-version comparison)
+- Opens the Releases page for manual download and installation
 
 ---
 
@@ -177,7 +176,7 @@ kirox/
 │   ├── data/                  # Result I/O
 │   ├── proxy/                 # Egress IP / geo detection
 │   ├── subscription/          # Subscription links: token refresh + listAvailableSubscriptions / CreateSubscriptionToken / setUserPreference
-│   ├── updater/               # Auto-update
+│   ├── updater/               # Version checks
 │   └── http/                  # TLS-client helpers
 └── frontend/
     ├── index.html             # Single-page entry

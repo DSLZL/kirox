@@ -43,8 +43,6 @@ func (a *App) startup(ctx context.Context) {
 		runtime.WindowCenter(ctx)
 	}()
 
-	// 清理上次更新可能遗留的临时文件
-	go updater.CleanupTemp()
 }
 
 // shutdown 在应用关闭时调用
@@ -138,26 +136,6 @@ func countOutlookAccounts() (total, registered, success, pending int) {
 		}
 	}
 	return
-}
-
-// VerifyLicense 验证卡密
-func (a *App) VerifyLicense(licenseKey string) map[string]interface{} {
-	return map[string]interface{}{"success": true}
-}
-
-// CheckLicense 检查本地卡密
-func (a *App) CheckLicense() map[string]interface{} {
-	return map[string]interface{}{"valid": true}
-}
-
-// GetLicenseInfo 获取卡密详细信息
-func (a *App) GetLicenseInfo() map[string]interface{} {
-	return map[string]interface{}{"success": true, "key": ""}
-}
-
-// LogoutLicense 退出卡密
-func (a *App) LogoutLicense() map[string]interface{} {
-	return map[string]interface{}{"success": true, "message": "已退出"}
 }
 
 // ---- MoeMail ----
@@ -370,20 +348,10 @@ func (a *App) CheckUpdate() map[string]interface{} {
 	return updater.CheckUpdate()
 }
 
-// DownloadUpdate 下载更新（使用服务端缓存的下载地址，不接受前端参数）
-func (a *App) DownloadUpdate() map[string]interface{} {
-	return updater.DownloadUpdate(a.ctx)
-}
-
 // ResetFingerprintCache 清空所有按代理缓存的浏览器指纹，下一次注册重新生成
 func (a *App) ResetFingerprintCache() map[string]interface{} {
 	browser.ResetIdentityCache()
 	return map[string]interface{}{"success": true}
-}
-
-// CancelUpdate 取消正在进行的更新下载
-func (a *App) CancelUpdate() map[string]interface{} {
-	return updater.CancelUpdate()
 }
 
 // ---- 订阅：一键获取支付链接 ----

@@ -209,11 +209,6 @@ function clearRegisteredOutlookAccounts() {
   );
 }
 
-function openOutlookModal() {
-  switchPage('accounts');
-  loadOutlookAccountsList();
-}
-
 // ===== 自动刷新（停留在邮箱池页时每 3 秒刷新状态） =====
 var outlookRefreshTimer = null;
 
