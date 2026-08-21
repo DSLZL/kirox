@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="frontend/assets/appicon.svg" width="100" height="100" alt="KiroX">
+  <img src="frontend/assets/appicon.png" width="100" height="100" alt="KiroX">
 </p>
 
 <h1 align="center">KiroX</h1>
