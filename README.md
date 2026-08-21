@@ -262,7 +262,6 @@ xattr -cr /path/to/KiroX.app
 ## 交流
 
 - QQ 交流群：[点击加入](https://qm.qq.com/q/RXMTXUlc4w)
-- Telegram 群组：[@kiroXaitg](https://t.me/kiroXaitg)
 
 ---
 
