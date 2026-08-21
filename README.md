@@ -289,4 +289,4 @@ limitations under the License.
 
 ## Star History
 
-[![Star History Chart](https://api.star-history.com/svg?repos=huey1in/kirox&type=Date)](https://star-history.com/#huey1in/kirox&Date)
+[![Star History Chart](https://star-history.dera.page/svg?repos=huey1in/kirox&type=Date)](https://star-history.dera.page/#huey1in/kirox&Date)
