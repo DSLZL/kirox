@@ -39,7 +39,7 @@
       },
       about: {
         currentVersion: '当前版本', latestVersion: '最新版本', releaseDate: '发布日期', author: '作者',
-        newVersionFound: '发现新版本', joinGroup: '加入交流群', tgGroup: 'Telegram 群组', updateContent: '更新内容',
+        newVersionFound: '发现新版本', joinGroup: '加入交流群', updateContent: '更新内容',
         updateNow: '查看版本', features: '版本特性', clickToUpdate: '前往 Releases 页面下载最新版本',
         sponsor: '赞助支持', sponsorDesc: '如果这个工具对你有帮助，欢迎请作者喝杯咖啡 ☕',
         wechatPay: '微信支付', alipay: '支付宝'
@@ -240,7 +240,7 @@
       },
       about: {
         currentVersion: 'Current', latestVersion: 'Latest', releaseDate: 'Released', author: 'Author',
-        newVersionFound: 'New version available', joinGroup: 'Join group', tgGroup: 'Telegram group', updateContent: "What's new",
+        newVersionFound: 'New version available', joinGroup: 'Join group', updateContent: "What's new",
         updateNow: 'View release', features: 'Release notes', clickToUpdate: 'Open Releases to download the latest version',
         sponsor: 'Sponsor', sponsorDesc: 'If this tool helps you, consider buying the author a coffee ☕',
         wechatPay: 'WeChat Pay', alipay: 'Alipay'
@@ -441,7 +441,7 @@
       },
       about: {
         currentVersion: '現在のバージョン', latestVersion: '最新バージョン', releaseDate: 'リリース日', author: '作者',
-        newVersionFound: '新しいバージョンがあります', joinGroup: 'グループに参加', tgGroup: 'Telegram グループ', updateContent: '更新内容',
+        newVersionFound: '新しいバージョンがあります', joinGroup: 'グループに参加', updateContent: '更新内容',
         updateNow: 'リリースを見る', features: 'リリースノート', clickToUpdate: 'Releases ページから最新版をダウンロード',
         sponsor: 'スポンサー', sponsorDesc: '役に立ったら作者にコーヒーを ☕',
         wechatPay: 'WeChat Pay', alipay: 'Alipay'
